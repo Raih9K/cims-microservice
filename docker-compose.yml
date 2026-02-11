@@ -1,0 +1,164 @@
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  gateway:
+    build:
+      context: ./services/gateway
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./services/gateway:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3000
+    depends_on:
+      - user-service
+      - product-service
+      - inventory-service
+
+  user-service:
+    build:
+      context: ./services/user-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./services/user-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3001
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_users
+    depends_on:
+      - mysql
+
+  product-service:
+    build:
+      context: ./services/product-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./services/product-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3002
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_products
+    depends_on:
+      - mysql
+
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./services/inventory-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3003
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_inventory
+    depends_on:
+      - mysql
+
+  shopify-service:
+    build:
+      context: ./services/shopify-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3004:3004"
+    volumes:
+      - ./services/shopify-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3004
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_shopify
+    depends_on:
+      - mysql
+
+  marketplace-service:
+    build:
+      context: ./services/marketplace-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3005:3005"
+    volumes:
+      - ./services/marketplace-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3005
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_marketplace
+    depends_on:
+      - mysql
+
+  audit-service:
+    build:
+      context: ./services/audit-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3006:3006"
+    volumes:
+      - ./services/audit-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3006
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_audit
+    depends_on:
+      - mysql
+
+  order-service:
+    build:
+      context: ./services/order-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3007:3007"
+    volumes:
+      - ./services/order-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3007
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_orders
+    depends_on:
+      - mysql
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      target: development
+    command: sh -c "npx prisma generate && npm run start:dev"
+    ports:
+      - "3008:3008"
+    volumes:
+      - ./services/notification-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3008
+      - DATABASE_URL=mysql://root:@mysql:3306/cims_notifications
+    depends_on:
+      - mysql
+      - redis
+
+volumes:
+  mysql_data:

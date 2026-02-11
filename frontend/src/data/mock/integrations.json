@@ -1,0 +1,17 @@
+[
+  {
+    "id": "shopify",
+    "marketplace": "shopify",
+    "name": "Shopify",
+    "channel_id": "SHOPIFY-MAIN-001",
+    "status": "connected",
+    "nickname": "Shopify Main",
+    "logo": "https://www.vectorlogo.zone/logos/shopify/shopify-ar21.svg",
+    "marketplace_data": {
+        "description": "Active synchronization handshake.",
+        "seller_id": "A2L241",
+        "region": "US"
+    },
+    "updated_at": "2024-01-20T10:00:00Z"
+  }
+]

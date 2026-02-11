@@ -1,0 +1,19 @@
+{
+  "name": "cims-microservice",
+  "version": "1.0.0",
+  "description": "CIMS Microservices Architecture",
+  "private": true,
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "build": "docker-compose build",
+    "logs": "docker-compose logs -f",
+    "migration": "node scripts/migration/main.js"
+  },
+  "workspaces": [
+    "services/*",
+    "frontend"
+  ],
+  "author": "weMonks Team",
+  "license": "UNLICENSED"
+}

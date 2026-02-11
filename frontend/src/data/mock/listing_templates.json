@@ -1,0 +1,42 @@
+{
+  "templates": [
+    {
+      "id": "1",
+      "name": "Shopify Premium Core",
+      "platform": "Shopify",
+      "type": "Listing Template",
+      "status": "Active",
+      "fields": 18,
+      "lastUpdated": "2 hours ago",
+      "category": "Electronics",
+      "version": "v2.4"
+    },
+    {
+      "id": "2",
+      "name": "Amazon Global Bulk-A",
+      "platform": "Amazon",
+      "type": "Listing Template",
+      "status": "Draft",
+      "fields": 42,
+      "lastUpdated": "1 day ago",
+      "category": "Home & Garden",
+      "version": "v1.0"
+    },
+    {
+      "id": "3",
+      "name": "eBay Fashion Standard",
+      "platform": "eBay",
+      "type": "Listing Template",
+      "status": "Active",
+      "fields": 12,
+      "lastUpdated": "3 days ago",
+      "category": "Apparel",
+      "version": "v3.1"
+    }
+  ],
+  "taxonomyGroups": [
+    { "id": "TX-001", "name": "Consumer Electronics", "path": "Electronics > Personal Audio", "products_count": 145 },
+    { "id": "TX-002", "name": "Home Appliances", "path": "Home > Kitchen > Small Appliances", "products_count": 89 },
+    { "id": "TX-009", "name": "Mens Apparel", "path": "Clothing > Mens > Shirts", "products_count": 320 }
+  ]
+}

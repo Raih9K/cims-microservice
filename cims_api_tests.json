@@ -1,0 +1,188 @@
+{
+  "info": {
+    "_postman_id": "cims-api-test-suite",
+    "name": "CIMS Inventory API V1",
+    "description": "Test collection for CIMS Product & Inventory management APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Login (Get Token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.environment.set(\"token\", jsonData.access_token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"admin@demo.com\",\n    \"password\": \"password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create Simple Product (Will Auto-Active)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"basicInfo\": {\n        \"title\": \"Premium Wireless Mouse (Test Active)\",\n        \"sku\": \"MOUSE-MX-001\",\n        \"category\": \"Electronics\",\n        \"brand\": \"Logitech\",\n        \"productIdentifierType\": \"UPC\",\n        \"productIdentifierValue\": \"123456789012\"\n    },\n    \"description\": {\n        \"mainDescription\": \"High precision wireless mouse with ergonomic design.\"\n    },\n    \"pricing\": {\n        \"sellingPrice\": 99.99,\n        \"costPrice\": 60.00,\n        \"taxClass\": \"standard\"\n    },\n    \"inventory\": {\n        \"stocks\": [\n            {\n                \"warehouse\": \"Default\",\n                \"available\": 150,\n                \"binLocations\": [\"A1-05\"]\n            }\n        ]\n    },\n    \"media\": {\n        \"images\": [\n            \"https://placehold.co/600x400/png\"\n        ]\n    },\n    \"variants\": {\n        \"hasVariation\": false\n    },\n    \"listingStatus\": {\n        \"status\": \"Draft\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/products",
+          "host": ["{{base_url}}"],
+          "path": ["api", "products"]
+        },
+        "description": "This request sends >80% of data (Title, SKU, Brand, Category, Image, Price) AND has Stock > 0. The backend should automatically set status to 'Active' instead of the requested 'Draft'."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Create Draft Product (Incomplete)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"basicInfo\": {\n        \"title\": \"Incomplete Product (Draft)\",\n        \"sku\": \"DRAFT-001\"\n    },\n    \"inventory\": {\n        \"stocks\": [\n            {\n                \"available\": 0\n            }\n        ]\n    },\n    \"variants\": {\n        \"hasVariation\": false\n    },\n    \"listingStatus\": {\n        \"status\": \"Draft\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/products",
+          "host": ["{{base_url}}"],
+          "path": ["api", "products"]
+        },
+        "description": "This request has minimal data and 0 stock. It should remain 'Draft'."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Create Variant Product",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"basicInfo\": {\n        \"title\": \"Canvas Sneaker\",\n        \"sku\": \"SNKR-BASE-01\",\n        \"category\": \"Footwear\",\n        \"brand\": \"Nike\"\n    },\n    \"description\": {\n        \"mainDescription\": \"Comfortable everyday sneakers.\"\n    },\n    \"pricing\": {\n        \"sellingPrice\": 50.00\n    },\n    \"media\": {\n        \"images\": [\"https://placehold.co/600\"]\n    },\n    \"variants\": {\n        \"hasVariation\": true,\n        \"variantItems\": [\n            {\n                \"title\": \"Sneaker Red 42\",\n                \"sku\": \"SNKR-RED-42\",\n                \"price\": 50,\n                \"quantity\": 10,\n                \"combination\": { \"Color\": \"Red\", \"Size\": \"42\" }\n            },\n            {\n                \"title\": \"Sneaker Blue 42\",\n                \"sku\": \"SNKR-BLU-42\",\n                \"price\": 50,\n                \"quantity\": 5,\n                \"combination\": { \"Color\": \"Blue\", \"Size\": \"42\" }\n            }\n        ]\n    },\n    \"listingStatus\": {\n        \"status\": \"Active\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/products",
+          "host": ["{{base_url}}"],
+          "path": ["api", "products"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Update Product Stock (Table Edit)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"basicInfo\": {\n        \"title\": \"Premium Wireless Mouse (Test Active)\",\n        \"sku\": \"MOUSE-MX-001\"\n    },\n    \"inventory\": {\n        \"stocks\": [\n            {\n                \"warehouse\": \"Default\",\n                \"available\": 200\n            }\n        ]\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/products/:id",
+          "host": ["{{base_url}}"],
+          "path": ["api", "products", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1234567890",
+              "description": "Replace with actual Product ID"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ]
+}

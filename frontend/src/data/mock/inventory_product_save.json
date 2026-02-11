@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "message": "Product saved successfully",
+  "product": {
+    "id": "prod_new_123",
+    "sku": "SKU-MOCK-1",
+    "status": "Draft"
+  }
+}

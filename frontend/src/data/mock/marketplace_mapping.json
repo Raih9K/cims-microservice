@@ -1,0 +1,40 @@
+[
+  {
+    "id": "1",
+    "sku": "MRP400-R-57",
+    "title": "Angry Itch Combat Boot - Leather 14 Hole",
+    "price": 185.00,
+    "channel": { "name": "Shopify Main", "icon": "https://www.vectorlogo.zone/logos/shopify/shopify-icon.svg" },
+    "status": "unlinked",
+    "matchScore": 0
+  },
+  {
+    "id": "2",
+    "sku": "MRP400-R-812",
+    "title": "Harley Leather Women's Boot",
+    "price": 145.50,
+    "channel": { "name": "eBay Global", "icon": "https://www.vectorlogo.zone/logos/ebay/ebay-icon.svg" },
+    "status": "suggestion",
+    "suggestion": { "sku": "HRL-WMN-812", "title": "Harley Wmns Boot - Black", "stock": 24, "price": 145.00 },
+    "matchScore": 95
+  },
+  {
+    "id": "3",
+    "sku": "MRP400-R-813",
+    "title": "Davidson Leather Women's Boot",
+    "price": 155.00,
+    "channel": { "name": "Shopify Main", "icon": "https://www.vectorlogo.zone/logos/shopify/shopify-icon.svg" },
+    "status": "linked",
+    "linked": { "sku": "MRP400-R-813", "title": "Davidson Leather Women's Boot", "stock": 12, "price": 155.00 },
+    "matchScore": 100
+  },
+  {
+    "id": "6",
+    "sku": "MRP402",
+    "title": "Harley David Boot - Red Edition",
+    "price": 160.00,
+    "channel": { "name": "eBay Global", "icon": "https://www.vectorlogo.zone/logos/ebay/ebay-icon.svg" },
+    "status": "unlinked",
+    "matchScore": 0
+  }
+]

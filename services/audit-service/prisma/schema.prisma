@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  companyId   Int
+  userId      Int?
+  action      String   // create, update, delete, sync, login, logout
+  entityType  String   // e.g., "Product", "Listing"
+  entityId    String?
+  oldValues   Json?
+  newValues   Json?
+  ipAddress   String?
+  userAgent   String?
+  requestId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([companyId])
+  @@index([entityType, entityId])
+}

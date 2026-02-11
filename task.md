@@ -1,0 +1,35 @@
+# System Mapping, Seeding, and CRUD Audit
+
+- [ ] **System Analysis & Mapping** `<!-- id: 0 -->`
+  - [ ] Map Auth Module (Frontend <-> Backend) `<!-- id: 1 -->`
+  - [ ] Map Product & Inventory Module (Frontend <-> Backend) `<!-- id: 2 -->`
+  - [ ] Map Marketplace/Shopify Module (Frontend <-> Backend) `<!-- id: 3 -->`
+  - [ ] Map Settings & Metadata (Frontend <-> Backend) `<!-- id: 4 -->`
+  - [ ] Map Team & Subscription (Frontend <-> Backend) `<!-- id: 5 -->`
+- [ ] **Seeder Implementation Plan** `<!-- id: 6 -->`
+  - [ ] Design Core Seeders (Users, Companies, Roles) `<!-- id: 7 -->`
+  - [ ] Design Catalog Seeders (Categories, Brands, Attributes) `<!-- id: 8 -->`
+  - [ ] Design Inventory Seeders (Warehouses, Stock) `<!-- id: 9 -->`
+  - [ ] Design Product Seeders (Complex Products with Variants) `<!-- id: 10 -->`
+- [ ] **CRUD Capabilities Audit** `<!-- id: 11 -->`
+  - [ ] Audit Auth Controller `<!-- id: 12 -->`
+  - [ ] Audit Product Controller `<!-- id: 13 -->`
+  - [ ] Audit Resource Controllers (Brand, Category, etc.) `<!-- id: 14 -->`
+  - [ ] Audit Integration Controllers `<!-- id: 15 -->`
+- [ ] **Execution** `<!-- id: 16 -->`
+  - [ ] Create/Update Seeders `<!-- id: 17 -->`
+  - [ ] Generate Mapping Document `<!-- id: 18 -->`
+    - [ ] Generate CRUD Audit Report `<!-- id: 19 -->`
+- [ ] **Testing & Automation (Playwright)** `<!-- id: 20 -->`
+  - [ ] Install & Configure Playwright `<!-- id: 21 -->`
+  - [ ] **UI E2E Tests:**
+    - [ ] Auth UI (Signup, Login, OTP) `<!-- id: 22 -->`
+    - [ ] Product UI (CRUD, Variants) `<!-- id: 23 -->`
+    - [ ] Inventory UI (Stock, Warehouses) `<!-- id: 24 -->`
+    - [ ] Settings & Team UI `<!-- id: 26 -->`
+  - [ ] **API Tests (Direct Backend):**
+    - [ ] Auth API (Login, Verify OTP) `<!-- id: 30 -->`
+    - [ ] Product API (Create, List, Update, Delete) `<!-- id: 31 -->`
+    - [ ] Resource API (Brands, Categories, Attributes) `<!-- id: 32 -->`
+    - [ ] Inventory API (Stock Levels) `<!-- id: 33 -->`
+  - [ ] Automate Test Execution Pipeline `<!-- id: 25 -->`

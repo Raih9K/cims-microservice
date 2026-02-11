@@ -1,0 +1,21 @@
+[
+  { "id": "1", "marketplaceField": "product_title", "internalField": "product_name", "direction": "dual" },
+  { "id": "2", "marketplaceField": "sku_code", "internalField": "sku_reference", "direction": "dual" },
+  { "id": "3", "marketplaceField": "brand_authority", "internalField": "brand_name", "direction": "egress" },
+  { "id": "4", "marketplaceField": "nodal_condition", "internalField": "condition_type", "direction": "egress" },
+  { "id": "5", "marketplaceField": "base_price", "internalField": "retail_price", "direction": "egress" },
+  { "id": "6", "marketplaceField": "available_stock", "internalField": "inventory_quantity", "direction": "ingress" },
+  { "id": "7", "marketplaceField": "msrp_baseline", "internalField": "msrp_price", "direction": "egress" },
+  { "id": "8", "marketplaceField": "unit_purchase_cost", "internalField": "cost_price", "direction": "ingress" },
+  { "id": "9", "marketplaceField": "currency_protocol", "internalField": "currency_code", "direction": "dual" },
+  { "id": "10", "marketplaceField": "core_material", "internalField": "material_specification", "direction": "egress" },
+  { "id": "11", "marketplaceField": "visual_hue", "internalField": "color_hex", "direction": "egress" },
+  { "id": "12", "marketplaceField": "dimensional_size", "internalField": "size_value", "direction": "egress" },
+  { "id": "13", "marketplaceField": "origin_consensus", "internalField": "country_of_origin", "direction": "egress" },
+  { "id": "14", "marketplaceField": "registry_id", "internalField": "barcode_upc", "direction": "dual" },
+  { "id": "15", "marketplaceField": "rich_description", "internalField": "body_html", "direction": "egress" },
+  { "id": "16", "marketplaceField": "media_assets", "internalField": "image_urls", "direction": "egress" },
+  { "id": "17", "marketplaceField": "strategic_descriptor_1", "internalField": "bullet_point_1", "direction": "egress" },
+  { "id": "18", "marketplaceField": "strategic_descriptor_2", "internalField": "bullet_point_2", "direction": "egress" },
+  { "id": "19", "marketplaceField": "vince_keywords", "internalField": "search_keywords", "direction": "egress" }
+]

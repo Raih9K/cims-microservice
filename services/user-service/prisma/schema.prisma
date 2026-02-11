@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  name              String
+  password          String?
+  googleId          String?   @unique
+  avatar            String?
+  otp               String?
+  emailVerifiedAt   DateTime?
+  status            String    @default("active") // active, inactive, pending
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  memberships       Membership[]
+  ownedCompanies    Company[]    @relation("CompanyOwner")
+  refreshTokens     RefreshToken[]
+}
+
+model Company {
+  id                Int       @id @default(autoincrement())
+  name              String
+  businessType      String?
+  managementType    ManagementType @default(SINGLE)
+  ownerId           Int
+  owner             User      @relation("CompanyOwner", fields: [ownerId], references: [id])
+  status            String    @default("active")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  memberships       Membership[]
+}
+
+enum ManagementType {
+  SINGLE
+  TEAM
+}
+
+model Membership {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  companyId         Int
+  roleId            Int
+  user              User      @relation(fields: [userId], references: [id])
+  company           Company   @relation(fields: [companyId], references: [id])
+  role              Role      @relation(fields: [roleId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([userId, companyId])
+}
+
+model Role {
+  id                Int       @id @default(autoincrement())
+  name              String    @unique // SUPER_ADMIN, BUSINESS_ADMIN, TEAM_MANAGER, TEAM_MEMBER, VIEWER
+  description       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  memberships       Membership[]
+  permissions       RolePermission[]
+}
+
+model Permission {
+  id                Int       @id @default(autoincrement())
+  name              String    @unique // e.g., "product:create", "inventory:view"
+  description       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  roles             RolePermission[]
+}
+
+model RolePermission {
+  roleId            Int
+  permissionId      Int
+  role              Role       @relation(fields: [roleId], references: [id])
+  permission        Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model RefreshToken {
+  id                Int       @id @default(autoincrement())
+  token             String    @unique
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+}

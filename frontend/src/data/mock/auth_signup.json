@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "message": "Account created successfully",
+  "email": "user@example.com",
+  "user": {
+    "id": "user_001",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "role": "admin"
+  }
+}

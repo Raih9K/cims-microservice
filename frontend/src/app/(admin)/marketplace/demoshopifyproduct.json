@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sp_01",
+    "sku": "HD-PLAIN-001",
+    "title": "Plain Hoodie",
+    "price": 25.00,
+    "stock": 100,
+    "channel_status": "Active"
+  },
+  {
+    "id": "sp_02",
+    "sku": "TS-S-RED",
+    "title": "CIMS T-Shirt",
+    "price": 15.00,
+    "stock": 50,
+    "channel_status": "Active"
+  },
+  {
+    "id": "sp_03",
+    "sku": "ACC-SC-01",
+    "title": "Urban Explorer Scarf",
+    "price": 8.50,
+    "stock": 12,
+    "channel_status": "Out of Sync"
+  }
+]

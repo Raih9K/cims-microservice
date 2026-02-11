@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ShopifyStore {
+  id                Int       @id @default(autoincrement())
+  companyId         Int
+  shop              String    @unique // e.g., "my-store.myshopify.com"
+  accessToken       String?
+  scope             String?
+  status            String    @default("pending") // pending, active, error
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  logs              ShopifyLog[]
+}
+
+model ShopifyLog {
+  id                Int       @id @default(autoincrement())
+  shopId            Int
+  shop              ShopifyStore @relation(fields: [shopId], references: [id])
+  level             String    // info, error, warn
+  message           String
+  payload           Json?
+  createdAt         DateTime  @default(now())
+}

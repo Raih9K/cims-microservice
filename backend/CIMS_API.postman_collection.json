@@ -1,0 +1,439 @@
+{
+	"info": {
+		"_postman_id": "cims-api-v1",
+		"name": "CIMS API Collection",
+		"description": "API Collection for Commerce Inventory Management System (CIMS)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\",\n    \"company_name\": \"Doe Logistics\",\n    \"business_type\": \"Retail\",\n    \"management_type\": \"team\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/signup",
+							"host": ["{{base_url}}"],
+							"path": ["api", "signup"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.access_token) {",
+									"    pm.environment.set(\"token\", jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@demo.com\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "login"]
+						}
+					}
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john@example.com\",\n    \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/verify-otp",
+							"host": ["{{base_url}}"],
+							"path": ["api", "verify-otp"]
+						}
+					}
+				},
+				{
+					"name": "Resend OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/resend-otp",
+							"host": ["{{base_url}}"],
+							"path": ["api", "resend-otp"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "logout"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User (Me)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Product Management",
+			"item": [
+				{
+					"name": "List Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/api/products?page=1&limit=15",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "15" },
+								{ "key": "search", "value": "", "disabled": true },
+								{ "key": "category", "value": "", "disabled": true }
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Product (Simple)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"basicInfo\": {\n        \"title\": \"Sample Product\",\n        \"sku\": \"PROD-101\",\n        \"category\": \"Electronics\",\n        \"brand\": \"BrandX\"\n    },\n    \"description\": {\n        \"mainDescription\": \"Full product description here\"\n    },\n    \"pricing\": {\n        \"costPrice\": 50.00,\n        \"sellingPrice\": 100.00,\n        \"discountType\": \"none\"\n    },\n    \"inventory\": {\n        \"stocks\": [\n            {\n                \"warehouse\": \"Main\",\n                \"available\": 100\n            }\n        ]\n    },\n    \"variants\": {\n        \"hasVariation\": false\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						}
+					}
+				},
+				{
+					"name": "Get Product Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/api/products/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", ":id"],
+							"variable": [{ "key": "id", "value": "1" }]
+						}
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"basicInfo\": {\n        \"title\": \"Updated Product Name\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", ":id"],
+							"variable": [{ "key": "id", "value": "1" }]
+						}
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/api/products/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", ":id"],
+							"variable": [{ "key": "id", "value": "1" }]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Team Management",
+			"item": [
+				{
+					"name": "List Team Members",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/api/team",
+							"host": ["{{base_url}}"],
+							"path": ["api", "team"]
+						}
+					}
+				},
+				{
+					"name": "Invite Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"member@example.com\",\n    \"role\": \"Team Member\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/team/invite",
+							"host": ["{{base_url}}"],
+							"path": ["api", "team", "invite"]
+						}
+					}
+				},
+				{
+					"name": "Switch Company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/team/switch-company",
+							"host": ["{{base_url}}"],
+							"path": ["api", "team", "switch-company"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Settings Resources",
+			"item": [
+				{
+					"name": "Categories",
+					"item": [
+						{
+							"name": "List Categories",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+								},
+								"method": "GET",
+								"url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api", "categories"] }
+							}
+						},
+						{
+							"name": "Create Category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+								},
+								"method": "POST",
+								"body": { "mode": "raw", "raw": "{\n    \"name\": \"New Category\"\n}" },
+								"url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api", "categories"] }
+							}
+						}
+					]
+				},
+				{
+					"name": "Warehouses",
+					"item": [
+						{
+							"name": "List Warehouses",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+								},
+								"method": "GET",
+								"url": { "raw": "{{base_url}}/api/warehouses", "host": ["{{base_url}}"], "path": ["api", "warehouses"] }
+							}
+						},
+						{
+							"name": "Create Warehouse",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+								},
+								"method": "POST",
+								"body": { "mode": "raw", "raw": "{\n    \"name\": \"Main Distribution Center\",\n    \"location\": \"California\"\n}" },
+								"url": { "raw": "{{base_url}}/api/warehouses", "host": ["{{base_url}}"], "path": ["api", "warehouses"] }
+							}
+						}
+					]
+				},
+				{
+					"name": "Brands",
+					"item": [
+						{
+							"name": "List Brands",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+								},
+								"method": "GET",
+								"url": { "raw": "{{base_url}}/api/brands", "host": ["{{base_url}}"], "path": ["api", "brands"] }
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "5. Subscriptions",
+			"item": [
+				{
+					"name": "Get Packages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{base_url}}/api/packages", "host": ["{{base_url}}"], "path": ["api", "packages"] }
+					}
+				},
+				{
+					"name": "Apply Coupon",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"body": { "mode": "raw", "raw": "{\n    \"code\": \"SAVE20\"\n}" },
+						"url": { "raw": "{{base_url}}/api/apply-coupon", "host": ["{{base_url}}"], "path": ["api", "apply-coupon"] }
+					}
+				},
+				{
+					"name": "Subscribe",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+						},
+						"method": "POST",
+						"body": { "mode": "raw", "raw": "{\n    \"package_id\": 2,\n    \"coupon_code\": \"SAVE20\"\n}" },
+						"url": { "raw": "{{base_url}}/api/subscribe", "host": ["{{base_url}}"], "path": ["api", "subscribe"] }
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
