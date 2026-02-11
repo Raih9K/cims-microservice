@@ -7,7 +7,9 @@ This is a **microservices-based** inventory management system with:
 - **Frontend**: Next.js (React) - Port 3100
 - **API Gateway**: NestJS - Port 3000
 - **8 Microservices**: User, Product, Inventory, Shopify, Marketplace, Audit, Order, Notification
-- **Databases**: MySQL (per service), Redis
+- **Databases**:
+  - **Real DB**: MySQL (per service) - Port 3306
+  - **Mock DB**: JSON Static File (`db.json`) - Port 4000
 - **Migration**: From Laravel monolith to microservices
 
 ## 🚀 Quick Start
@@ -84,6 +86,29 @@ Each microservice has its own database:
 - `cims_audit` - Audit logs
 - `cims_orders` - Orders
 - `cims_notifications` - Notifications
+
+## 🛠️ Dual Database Mode
+
+You can now switch between a real MySQL database and a static JSON mock database.
+
+### 1. Real Database (Default)
+
+The system uses individual MySQL databases for each microservice.
+
+- **Access**: Port 3306
+- **Config**: `USE_MOCK_DB=false` in `docker-compose.yml`
+
+### 2. JSON Mock Database
+
+Useful for rapid UI development or demoing without backend logic.
+
+- **File**: `db.json` (root)
+- **Service**: `mock-db` (json-server)
+- **Access**: http://localhost:4000
+- **To Enable**:
+  1. Open `docker-compose.yml`
+  2. Set `USE_MOCK_DB=true` for the `gateway` service
+  3. Run `docker-compose up -d gateway`
 
 ## 🔄 Data Migration
 

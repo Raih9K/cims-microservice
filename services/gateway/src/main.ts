@@ -45,19 +45,37 @@ async function bootstrap() {
     },
   ];
 
-  services.forEach((service) => {
+  const useMockDb = process.env.USE_MOCK_DB === 'true';
+  const mockDbUrl = process.env.MOCK_DB_URL || 'http://mock-db:80';
+
+  if (useMockDb) {
+    console.log(`🛠️ Gateway running in MOCK MODE (routing to ${mockDbUrl})`);
     app.use(
-      service.context,
+      '/api',
       createProxyMiddleware({
-        target: service.target,
+        target: mockDbUrl,
         changeOrigin: true,
+        pathRewrite: {
+          '^/api': '', // json-server usually serves routes without /api prefix
+        },
       }),
     );
-  });
+  } else {
+    services.forEach((service) => {
+      app.use(
+        service.context,
+        createProxyMiddleware({
+          target: service.target,
+          changeOrigin: true,
+        }),
+      );
+    });
+  }
 
   app.enableCors();
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`API Gateway is running on: ${await app.getUrl()}`);
+  if (useMockDb) console.log(`👉 Mock JSON Database: http://localhost:4000`);
 }
 bootstrap();

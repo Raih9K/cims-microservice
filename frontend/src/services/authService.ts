@@ -110,7 +110,7 @@ export interface AuthResponse {
 
 export const authService = {
   async signup(data: any): Promise<{ message: string; email: string }> {
-    const res = await fetch(`${API_URL}/signup`, {
+    const res = await fetch(`${API_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(data),
@@ -155,8 +155,8 @@ export const authService = {
       return MOCK_AUTH_RESPONSE;
     }
 
-    console.log("Attempting login to:", `${API_URL}/login`);
-    const res = await fetch(`${API_URL}/login`, {
+    console.log("Attempting login to:", `${API_URL}/auth/login`);
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(data),
@@ -285,8 +285,8 @@ export const authService = {
       return res.json();
   },
 
-  async acceptInvite(data: { token: string; password: string; password_confirmation: string; name?: string }) {
-      const res = await fetch(`${API_URL}/team/accept-invitation`, {
+  async acceptInvite(data: { token: string; password: string; name?: string }) {
+      const res = await fetch(`${API_URL}/auth/accept-invite`, {
           method: "POST",
           headers: {
               "Content-Type": "application/json",

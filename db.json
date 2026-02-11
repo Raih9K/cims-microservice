@@ -1,0 +1,61 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@demo.com",
+      "name": "Admin User",
+      "status": "active"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Simple Office Chair",
+      "sku": "CHAIR-001",
+      "category": "Furniture",
+      "brand": "Herman Miller",
+      "sellingPrice": 150.0,
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "name": "Canvas T-Shirt",
+      "sku": "TSHIRT-BASE-001",
+      "category": "Apparel",
+      "brand": "Uniqlo",
+      "sellingPrice": 20.0,
+      "status": "Active"
+    }
+  ],
+  "inventory": [
+    {
+      "id": 1,
+      "productId": 1,
+      "warehouse": "Default",
+      "available": 50,
+      "reserved": 0
+    }
+  ],
+  "audit-logs": [
+    {
+      "id": 1,
+      "action": "login",
+      "user": "Admin User",
+      "timestamp": "2026-02-11T12:00:00Z"
+    }
+  ],
+  "warehouses": [
+    { "id": 1, "name": "Main Warehouse", "city": "New York" },
+    { "id": 2, "name": "West Coast Hub", "city": "Los Angeles" }
+  ],
+  "categories": [
+    { "id": 1, "name": "Electronics" },
+    { "id": 2, "name": "Furniture" },
+    { "id": 3, "name": "Apparel" }
+  ],
+  "brands": [
+    { "id": 1, "name": "Apple" },
+    { "id": 2, "name": "Logitech" },
+    { "id": 3, "name": "Herman Miller" }
+  ]
+}

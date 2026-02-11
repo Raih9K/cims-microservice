@@ -14,6 +14,14 @@ services:
     ports:
       - "6379:6379"
 
+  mock-db:
+    image: clue/json-server
+    ports:
+      - "4000:80"
+    volumes:
+      - ./db.json:/data/db.json
+    restart: always
+
   gateway:
     build:
       context: ./services/gateway
@@ -26,6 +34,8 @@ services:
       - /usr/src/app/node_modules
     environment:
       - PORT=3000
+      - USE_MOCK_DB=true
+      - MOCK_DB_URL=http://mock-db:80
     depends_on:
       - user-service
       - product-service

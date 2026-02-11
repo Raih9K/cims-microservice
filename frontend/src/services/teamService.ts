@@ -8,13 +8,13 @@ export const teamService = {
     return localStorage.getItem("token");
   },
 
-  async getTeam() {
+  async getTeam(companyId: number) {
     if (USE_MOCK_DATA) {
       await simulateApiDelay(500);
       return MOCK_TEAM_MEMBERS;
     }
 
-    const res = await fetch(`${API_URL}/team`, {
+    const res = await fetch(`${API_URL}/team/members?companyId=${companyId}`, {
       headers: {
         "Authorization": `Bearer ${this.getToken()}`,
         "Accept": "application/json"
@@ -22,7 +22,7 @@ export const teamService = {
     });
     const result = await res.json();
     if (!res.ok) throw new Error(result.message || "Failed to fetch team");
-    return result.data;
+    return result;
   },
 
   async inviteMember(data: { email: string; role: string }) {
@@ -41,7 +41,7 @@ export const teamService = {
   },
 
   async acceptInvitation(data: { token: string; name?: string; password?: string }) {
-    const res = await fetch(`${API_URL}/team/accept-invitation`, {
+    const res = await fetch(`${API_URL}/auth/accept-invite`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,8 +83,8 @@ export const teamService = {
     return result;
   },
 
-  async disableMember(id: number) {
-    const res = await fetch(`${API_URL}/team/${id}`, {
+  async disableMember(id: number, companyId: number) {
+    const res = await fetch(`${API_URL}/team/members/${id}?companyId=${companyId}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${this.getToken()}`,

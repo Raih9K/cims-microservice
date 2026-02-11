@@ -5,7 +5,7 @@ import { InventoryModule } from './inventory/inventory.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [InventoryModule, PrismaModule],
+  imports: [InventoryModule, PrismaModule, WarehouseModule],
   controllers: [AppController],
   providers: [AppService],
 })

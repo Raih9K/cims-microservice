@@ -1,7 +1,5 @@
 import {
-    ConflictException,
-    Injectable,
-    NotFoundException,
+    NotFoundException
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -103,5 +101,47 @@ export class ProductService {
   async delete(id: number, companyId: number) {
     const product = await this.findOne(id, companyId);
     return this.prisma.product.delete({ where: { id: product.id } });
+  }
+
+  // Categories
+  async createCategory(data: any) {
+    return this.prisma.category.create({ data });
+  }
+
+  async findAllCategories(companyId: number) {
+    return this.prisma.category.findMany({ where: { companyId } });
+  }
+
+  async findOneCategory(id: number) {
+    return this.prisma.category.findUnique({ where: { id } });
+  }
+
+  async updateCategory(id: number, data: any) {
+    return this.prisma.category.update({ where: { id }, data });
+  }
+
+  async deleteCategory(id: number) {
+    return this.prisma.category.delete({ where: { id } });
+  }
+
+  // Brands
+  async createBrand(data: any) {
+    return this.prisma.brand.create({ data });
+  }
+
+  async findAllBrands(companyId: number) {
+    return this.prisma.brand.findMany({ where: { companyId } });
+  }
+
+  async findOneBrand(id: number) {
+    return this.prisma.brand.findUnique({ where: { id } });
+  }
+
+  async updateBrand(id: number, data: any) {
+    return this.prisma.brand.update({ where: { id }, data });
+  }
+
+  async deleteBrand(id: number) {
+    return this.prisma.brand.delete({ where: { id } });
   }
 }
