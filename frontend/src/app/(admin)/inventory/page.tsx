@@ -34,7 +34,8 @@ interface Product {
   selling_price?: number;
   category?: string;
   brand?: string;
-  variants?: Product[];
+  variants?: Product[] | any;
+  variant_list?: any[];
 }
 
 export default function InventoryPage() {
@@ -75,6 +76,7 @@ export function InventoryPageContent() {
     location: true,
     price: true,
     lastModified: true,
+    created: false,
     status: false,
     actions: true,
   });
@@ -101,6 +103,7 @@ export function InventoryPageContent() {
     if (visibleColumns.location) columns.push("minmax(110px, 1fr)");
     if (visibleColumns.price) columns.push("110px");
     if (visibleColumns.lastModified) columns.push("minmax(120px, 1fr)");
+    if (visibleColumns.created) columns.push("minmax(120px, 1fr)");
     if (visibleColumns.status) columns.push("110px");
     if (visibleColumns.actions) columns.push("70px");
     return columns.join(" ");
@@ -111,11 +114,12 @@ export function InventoryPageContent() {
   const toggleSelectAll = () => {
     const allIds: string[] = [];
     products.forEach(p => {
-      const hasVariants = p.stock_type === 'parent' && p.variants && p.variants.length > 0;
+      const variantList = Array.isArray(p.variants) ? p.variants : ((p.variants as any)?.variantItems || p.variant_list || []);
+      const hasVariants = p.stock_type === 'parent' && variantList.length > 0;
 
       if (hasVariants) {
         // Only select variants, NOT the parent container
-        p.variants!.forEach((v: any, vIdx: number) => {
+        variantList.forEach((v: any, vIdx: number) => {
           const vId = (v.id || v.stock_item_id || `${p.stock_item_id}-v-${vIdx}`).toString();
           allIds.push(vId);
         });
@@ -415,6 +419,7 @@ export function InventoryPageContent() {
               {visibleColumns.location && <div className="font-extrabold">Origin</div>}
               {visibleColumns.price && <div className="text-right font-extrabold">Market Value</div>}
               {visibleColumns.lastModified && <div className="font-extrabold">Updated</div>}
+              {visibleColumns.created && <div className="font-extrabold">Created</div>}
               {visibleColumns.status && <div className="text-center font-extrabold">Status</div>}
               {visibleColumns.actions && <div className="text-center font-extrabold">Actions</div>}
             </div>
@@ -436,7 +441,8 @@ export function InventoryPageContent() {
               ) : filteredProducts.length > 0 ? (
                 <div className="overflow-y-auto h-full custom-scrollbar pb-20 px-6 py-4 space-y-3">
                   {filteredProducts.map((product, idx) => {
-                    const hasVariants = product.stock_type === 'parent' && product.variants && product.variants.length > 0;
+                    const variantList = Array.isArray(product.variants) ? product.variants : ((product.variants as any)?.variantItems || product.variant_list || []);
+                    const hasVariants = product.stock_type === 'parent' && variantList.length > 0;
                     const isExpanded = expandedRows.has(product.stock_item_id);
 
                     return (
@@ -518,7 +524,7 @@ export function InventoryPageContent() {
 
                           {visibleColumns.stock && (
                             <div className="flex justify-center">
-                              {editingStock?.id === product.stock_item_id ? (
+                              {editingStock && editingStock.id === product.stock_item_id ? (
                                 <input
                                   autoFocus
                                   type="number"
@@ -562,7 +568,7 @@ export function InventoryPageContent() {
 
                           {visibleColumns.price && (
                             <div className="text-right">
-                              {editingPrice?.id === product.stock_item_id ? (
+                              {editingPrice && editingPrice.id === product.stock_item_id ? (
                                 <input
                                   autoFocus
                                   type="number"
@@ -593,10 +599,21 @@ export function InventoryPageContent() {
                           {visibleColumns.lastModified && (
                             <div className="flex flex-col">
                               <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400">
-                                {product.updated_at ? new Date(product.updated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : "—"}
+                                {(product.updated_at || product.created_at) ? new Date(product.updated_at || product.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : "—"}
                               </span>
                               <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-medium uppercase tracking-tighter">
-                                {product.updated_at ? new Date(product.updated_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ""}
+                                {(product.updated_at || product.created_at) ? new Date(product.updated_at || product.created_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ""}
+                              </span>
+                            </div>
+                          )}
+
+                          {visibleColumns.created && (
+                            <div className="flex flex-col">
+                              <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400">
+                                {product.created_at ? new Date(product.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : "—"}
+                              </span>
+                              <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-medium uppercase tracking-tighter">
+                                {product.created_at ? new Date(product.created_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ""}
                               </span>
                             </div>
                           )}
@@ -656,7 +673,7 @@ export function InventoryPageContent() {
                         {hasVariants && isExpanded && (
                           <div className="relative pl-5 pr-4 -mt-4 pt-6 pb-4 bg-gray-50/50 dark:bg-gray-800/20 rounded-b-2xl border-x border-b border-gray-100 dark:border-gray-800/50 mb-2 animate-in slide-in-from-top-2 duration-200">
                             <div className="absolute left-3 top-0 bottom-6 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
-                            {product.variants?.map((variant: any, vIdx: number) => {
+                            {variantList.map((variant: any, vIdx: number) => {
                               // Ensure variant has an ID for selection/editing
                               const variantId = (variant.id || variant.stock_item_id || `${product.stock_item_id}-v-${vIdx}`).toString();
 
@@ -687,7 +704,7 @@ export function InventoryPageContent() {
                                     <div className="flex justify-center">
                                       <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden relative border border-gray-100 dark:border-gray-800 shadow-sm">
                                         {/* Placeholder for variant image */}
-                                        <div className="text-gray-300 dark:text-gray-600 font-bold text-xs uppercase">{(variant.name || product.title)?.charAt(0)}</div>
+                                        <div className="text-gray-300 dark:text-gray-600 font-bold text-xs uppercase">{(variant.title || variant.name || product.title)?.charAt(0)}</div>
                                       </div>
                                     </div>
                                   )}
@@ -695,7 +712,7 @@ export function InventoryPageContent() {
                                   {visibleColumns.title && (
                                     <div className="flex flex-col min-w-0 pr-4">
                                       <span className="font-bold text-xs text-gray-700 dark:text-gray-300 truncate group-hover/variant:text-brand-600 transition-colors">
-                                        {variant.name || product.title}
+                                        {variant.title || variant.name || product.title}
                                       </span>
                                       <div className="flex items-center gap-2 mt-1">
                                         <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest bg-gray-200/50 px-1.5 py-0.5 rounded">
@@ -715,7 +732,7 @@ export function InventoryPageContent() {
 
                                   {visibleColumns.stock && (
                                     <div className="flex justify-center">
-                                      {editingStock?.id === variantId ? (
+                                      {editingStock && editingStock.id === variantId ? (
                                         <input
                                           autoFocus
                                           type="number"
@@ -731,17 +748,17 @@ export function InventoryPageContent() {
                                           className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform group/stock"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            setEditingStock({ id: variantId, value: (variant.inventory_quantity || 0).toString() });
+                                            setEditingStock({ id: variantId, value: (variant.quantity || variant.inventory_quantity || 0).toString() });
                                           }}
                                           title="Click to edit variant inventory"
                                         >
-                                          <span className={`text-[12px] font-black ${(variant.inventory_quantity || 0) > 0 ? "text-gray-700 dark:text-gray-300" : "text-rose-500"}`}>
-                                            {variant.inventory_quantity || 0}
+                                          <span className={`text-[12px] font-black ${(variant.quantity || variant.inventory_quantity || 0) > 0 ? "text-gray-700 dark:text-gray-300" : "text-rose-500"}`}>
+                                            {variant.quantity || variant.inventory_quantity || 0}
                                           </span>
                                           <div className="w-8 h-1 bg-gray-100 dark:bg-gray-800 rounded-full mt-1.5 overflow-hidden">
                                             <div
-                                              className={`h-full rounded-full ${(variant.inventory_quantity || 0) > 20 ? 'bg-emerald-500' : (variant.inventory_quantity || 0) > 0 ? 'bg-amber-500' : 'bg-rose-500'}`}
-                                              style={{ width: `${Math.min(100, (variant.inventory_quantity || 0) * 2)}%` }}
+                                              className={`h-full rounded-full ${(variant.quantity || variant.inventory_quantity || 0) > 20 ? 'bg-emerald-500' : (variant.quantity || variant.inventory_quantity || 0) > 0 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                                              style={{ width: `${Math.min(100, (variant.quantity || variant.inventory_quantity || 0) * 2)}%` }}
                                             />
                                           </div>
                                           <span className="text-[7px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-[0.2em] mt-1 opacity-0 group-hover/stock:opacity-100 transition-opacity">Quick Edit</span>
@@ -759,7 +776,7 @@ export function InventoryPageContent() {
 
                                   {visibleColumns.price && (
                                     <div className="text-right">
-                                      {editingPrice?.id === variantId ? (
+                                      {editingPrice && editingPrice.id === variantId ? (
                                         <input
                                           autoFocus
                                           type="number"
@@ -774,12 +791,12 @@ export function InventoryPageContent() {
                                         <div
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            setEditingPrice({ id: variantId, value: (variant.price || 0).toString() });
+                                            setEditingPrice({ id: variantId, value: (variant.price || variant.selling_price || 0).toString() });
                                           }}
                                           className="flex flex-col items-end group/price hover:-translate-y-0.5 transition-transform cursor-pointer"
                                         >
                                           <span className="text-[11px] font-black text-gray-700 dark:text-gray-300 font-mono">
-                                            {variant.price ? `$${Number(variant.price).toFixed(2)}` : "—"}
+                                            {(variant.price || variant.selling_price) ? `$${Number(variant.price || variant.selling_price).toFixed(2)}` : "—"}
                                           </span>
                                           <span className="text-[7px] font-bold text-gray-300 dark:text-gray-600 uppercase tracking-[0.2em] mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Edit</span>
                                         </div>

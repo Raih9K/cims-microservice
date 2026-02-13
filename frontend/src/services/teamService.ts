@@ -8,13 +8,17 @@ export const teamService = {
     return localStorage.getItem("token");
   },
 
-  async getTeam(companyId: number) {
+  async getTeam(companyId?: number) {
     if (USE_MOCK_DATA) {
       await simulateApiDelay(500);
       return MOCK_TEAM_MEMBERS;
     }
 
-    const res = await fetch(`${API_URL}/team/members?companyId=${companyId}`, {
+    const url = companyId
+      ? `${API_URL}/team?companyId=${companyId}`
+      : `${API_URL}/team`;
+
+    const res = await fetch(url, {
       headers: {
         "Authorization": `Bearer ${this.getToken()}`,
         "Accept": "application/json"
@@ -83,8 +87,8 @@ export const teamService = {
     return result;
   },
 
-  async disableMember(id: number, companyId: number) {
-    const res = await fetch(`${API_URL}/team/members/${id}?companyId=${companyId}`, {
+  async disableMember(id: number) {
+    const res = await fetch(`${API_URL}/team/${id}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${this.getToken()}`,

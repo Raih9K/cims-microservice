@@ -15,7 +15,7 @@ const simulateApiDelay = (ms: number) => new Promise(resolve => setTimeout(resol
 
 const MOCK_USER: User = {
     id: 1,
-    name: "Demo Admin",
+    name: "Raihan Khan",
     email: "admin@demo.com",
     company_id: 1,
     status: 'active',
@@ -23,10 +23,10 @@ const MOCK_USER: User = {
     permissions: [],
     company: {
         id: 1,
-        name: "Demo Company",
-        business_type: "Retail",
-        management_type: "Inventory",
-        subscription_status: "active",
+        name: "Demo Tech Solutions",
+        business_type: "Technology",
+        management_type: "team",
+        subscription_status: "trial",
         package_id: 1
     }
 };

@@ -1,81 +1,35 @@
 import { NestFactory } from '@nestjs/core';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { AppModule } from './app.module';
 
+import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  const services = [
-    {
-      context: ['/api/auth', '/api/users', '/api/company', '/api/team'],
-      target: process.env.USER_SERVICE_URL || 'http://user-service:3001',
-    },
-    {
-      context: ['/api/products', '/api/categories', '/api/brands'],
-      target: process.env.PRODUCT_SERVICE_URL || 'http://product-service:3002',
-    },
-    {
-      context: ['/api/inventory', '/api/stock-levels', '/api/warehouses'],
-      target:
-        process.env.INVENTORY_SERVICE_URL || 'http://inventory-service:3003',
-    },
-    {
-      context: ['/api/shopify'],
-      target: process.env.SHOPIFY_SERVICE_URL || 'http://shopify-service:3004',
-    },
-    {
-      context: ['/api/channels', '/api/listings'],
-      target:
-        process.env.MARKETPLACE_SERVICE_URL ||
-        'http://marketplace-service:3005',
-    },
-    {
-      context: ['/api/audit-logs'],
-      target: process.env.AUDIT_SERVICE_URL || 'http://audit-service:3006',
-    },
-    {
-      context: ['/api/orders'],
-      target: process.env.ORDER_SERVICE_URL || 'http://order-service:3007',
-    },
-    {
-      context: ['/api/notifications'],
-      target:
-        process.env.NOTIFICATION_SERVICE_URL ||
-        'http://notification-service:3008',
-    },
-  ];
-
-  const useMockDb = process.env.USE_MOCK_DB === 'true';
-  const mockDbUrl = process.env.MOCK_DB_URL || 'http://mock-db:80';
-
-  if (useMockDb) {
-    console.log(`🛠️ Gateway running in MOCK MODE (routing to ${mockDbUrl})`);
-    app.use(
-      '/api',
-      createProxyMiddleware({
-        target: mockDbUrl,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': '', // json-server usually serves routes without /api prefix
-        },
-      }),
-    );
-  } else {
-    services.forEach((service) => {
-      app.use(
-        service.context,
-        createProxyMiddleware({
-          target: service.target,
-          changeOrigin: true,
-        }),
-      );
-    });
-  }
-
+  app.use(
+    '/api',
+    createProxyMiddleware({
+      target: 'http://localhost:3001',
+      router: (req) => {
+        const url: string = req.url || '';
+        const full = url.startsWith('/') ? '/api' + url : '/api/' + url;
+        const inv = [
+          '/api/products',
+          '/api/warehouses',
+          '/api/categories',
+          '/api/brands',
+          '/api/inventory',
+          '/api/suppliers',
+          '/api/attributes',
+          '/api/stock-levels',
+        ];
+        if (inv.some((p) => full.startsWith(p))) return 'http://localhost:3002';
+        return 'http://localhost:3001';
+      },
+      changeOrigin: true,
+      pathRewrite: (path: string) =>
+        path.startsWith('/') ? '/api' + path : '/api/' + path,
+    }),
+  );
   app.enableCors();
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`API Gateway is running on: ${await app.getUrl()}`);
-  if (useMockDb) console.log(`👉 Mock JSON Database: http://localhost:4000`);
+  await app.listen(3000);
 }
-bootstrap();
+bootstrap().catch((err) => console.error(err));

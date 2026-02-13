@@ -2,60 +2,163 @@
   "users": [
     {
       "id": 1,
+      "name": "Raihan Khan",
       "email": "admin@demo.com",
-      "name": "Admin User",
+      "company_id": 1,
       "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe",
+      "email": "manager@demo.com",
+      "company_id": 1,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "name": "John Smith",
+      "email": "member@demo.com",
+      "company_id": 1,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "name": "Super Admin",
+      "email": "superadmin@wemonks.org",
+      "company_id": null,
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "name": "System Admin",
+      "email": "admin@nexus.com",
+      "company_id": 2,
+      "status": "active"
+    }
+  ],
+  "categories": [
+    { "id": 1, "name": "Electronics" },
+    { "id": 2, "name": "Fashion" },
+    { "id": 3, "name": "Home & Garden" },
+    { "id": 4, "name": "Toys" },
+    { "id": 5, "name": "Sports" },
+    { "id": 6, "name": "Automotive" }
+  ],
+  "brands": [
+    { "brand_id": 1, "brand_name": "Nike", "brand_code": "NIK" },
+    { "brand_id": 2, "brand_name": "Samsung", "brand_code": "SAM" },
+    { "brand_id": 3, "brand_name": "Apple", "brand_code": "APP" },
+    { "brand_id": 4, "brand_name": "Adidas", "brand_code": "ADI" },
+    { "brand_id": 5, "brand_name": "Sony", "brand_code": "SON" },
+    { "brand_id": 6, "brand_name": "Lego", "brand_code": "LEG" },
+    { "brand_id": 7, "brand_name": "Bosch", "brand_code": "BOS" }
+  ],
+  "warehouses": [
+    {
+      "id": 1,
+      "name": "Main Warehouse (NY)",
+      "address": "New York, USA",
+      "is_default": true
+    },
+    {
+      "id": 2,
+      "name": "West Coast Hub (LA)",
+      "address": "Los Angeles, USA",
+      "is_default": false
+    },
+    {
+      "id": 3,
+      "name": "European Distribution (Berlin)",
+      "address": "Berlin, Germany",
+      "is_default": false
+    },
+    {
+      "id": 4,
+      "name": "Main Distribution Hub",
+      "address": "123 Supply Chain Ave",
+      "is_default": true
     }
   ],
   "products": [
     {
       "id": 1,
-      "name": "Simple Office Chair",
-      "sku": "CHAIR-001",
-      "category": "Furniture",
-      "brand": "Herman Miller",
-      "sellingPrice": 150.0,
-      "status": "Active"
+      "name": "iPhone 15 Pro",
+      "sku": "APP-IP15P-BLK",
+      "brand": "Apple",
+      "category": "Electronics",
+      "selling_price": "999.00",
+      "status": "Active",
+      "stock": 150
     },
     {
       "id": 2,
-      "name": "Canvas T-Shirt",
-      "sku": "TSHIRT-BASE-001",
-      "category": "Apparel",
-      "brand": "Uniqlo",
-      "sellingPrice": 20.0,
-      "status": "Active"
+      "name": "Sony WH-1000XM5",
+      "sku": "SON-WH1000XM5",
+      "brand": "Sony",
+      "category": "Electronics",
+      "selling_price": "349.00",
+      "status": "Active",
+      "stock": 85
+    },
+    {
+      "id": 3,
+      "name": "Nike Air Max 270",
+      "sku": "NIK-AM270-001",
+      "brand": "Nike",
+      "category": "Fashion",
+      "selling_price": "160.00",
+      "status": "Active",
+      "stock": 200
+    },
+    {
+      "id": 4,
+      "name": "Samsung Galaxy S24",
+      "sku": "SAM-GS24-256",
+      "brand": "Samsung",
+      "category": "Electronics",
+      "selling_price": "799.00",
+      "status": "Active",
+      "stock": 120
     }
   ],
-  "inventory": [
+  "listings": [
     {
-      "id": 1,
-      "productId": 1,
-      "warehouse": "Default",
-      "available": 50,
-      "reserved": 0
+      "listing_id": "lst_001",
+      "channel_id": "CH_001",
+      "stock_item_id": 1,
+      "status": "active",
+      "sync_status": "synced"
+    },
+    {
+      "listing_id": "lst_002",
+      "channel_id": "CH_002",
+      "stock_item_id": 1,
+      "status": "active",
+      "sync_status": "synced"
     }
   ],
   "audit-logs": [
     {
-      "id": 1,
+      "id": "1",
       "action": "login",
-      "user": "Admin User",
-      "timestamp": "2026-02-11T12:00:00Z"
+      "user_id": 1,
+      "entity_type": "user",
+      "ip_address": "127.0.0.1",
+      "created_at": "2026-02-12T07:30:00Z"
     }
   ],
-  "warehouses": [
-    { "id": 1, "name": "Main Warehouse", "city": "New York" },
-    { "id": 2, "name": "West Coast Hub", "city": "Los Angeles" }
-  ],
-  "categories": [
-    { "id": 1, "name": "Electronics" },
-    { "id": 2, "name": "Furniture" },
-    { "id": 3, "name": "Apparel" }
-  ],
-  "brands": [
-    { "id": 1, "name": "Apple" },
-    { "id": 2, "name": "Logitech" },
-    { "id": 3, "name": "Herman Miller" }
+  "companies": [
+    {
+      "id": 1,
+      "name": "Demo Tech Solutions",
+      "business_type": "Technology",
+      "management_type": "team"
+    },
+    {
+      "id": 2,
+      "name": "Nexus Global Corp",
+      "business_type": "Retail",
+      "management_type": "team"
+    }
   ]
 }

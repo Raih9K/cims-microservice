@@ -1,0 +1,615 @@
+[
+  {
+    "id": "3f52ef43-70a3-47e6-a3fc-00748f4dccbc",
+    "meta": {
+      "id": "",
+      "company_id": "",
+      "created_by": "",
+      "updated_by": "",
+      "created_at": "",
+      "updated_at": "",
+      "version": 1,
+      "status": "success",
+      "is_published": false
+    },
+    "basicInfo": {
+      "title": "Laborum Nesciunt r",
+      "sku": "Magna dolorem atque ",
+      "category": "",
+      "brand": ""
+    },
+    "description": {
+      "shortDescription": "Dolor non excepteur ",
+      "mainDescription": "<p>Maxime&nbsp;ullamco&nbsp;possi.</p>",
+      "features": [
+        "Quas dolore amet et",
+        "Commodo soluta enim ",
+        "Aut nostrum ut quia ",
+        "Quidem earum ducimus",
+        "Voluptatem nobis do"
+      ]
+    },
+    "variants": {
+      "themes": [
+        {
+          "name": "mm",
+          "values": [
+            "jj",
+            "hh"
+          ]
+        },
+        {
+          "name": "hh",
+          "values": [
+            "jj",
+            "y"
+          ]
+        }
+      ],
+      "hasVariation": true,
+      "variantItems": [
+        {
+          "id": "nvj1d9h0v",
+          "combination": {
+            "mm": "jj",
+            "hh": "jj"
+          },
+          "sku": "MAGNA-DO-JJ-JJ",
+          "title": "Laborum Nesciunt r",
+          "barcode": "",
+          "price": "32",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "hds2sbzxd",
+              "warehouse": "Default",
+              "sku": "MAGNA-DO-JJ-JJ",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "q59u3x9b2",
+          "combination": {
+            "mm": "jj",
+            "hh": "y"
+          },
+          "sku": "MAGNA-DO-JJ-Y",
+          "title": "Laborum Nesciunt r",
+          "barcode": "",
+          "price": "32",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "voh5214ly",
+              "warehouse": "Default",
+              "sku": "MAGNA-DO-JJ-Y",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "slsgisaga",
+          "combination": {
+            "mm": "hh",
+            "hh": "jj"
+          },
+          "sku": "MAGNA-DO-HH-JJ",
+          "title": "Laborum Nesciunt r",
+          "barcode": "",
+          "price": "32",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "j9cm5wthg",
+              "warehouse": "Default",
+              "sku": "MAGNA-DO-HH-JJ",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "oji2c0vvq",
+          "combination": {
+            "mm": "hh",
+            "hh": "y"
+          },
+          "sku": "MAGNA-DO-HH-Y",
+          "title": "Laborum Nesciunt r",
+          "barcode": "",
+          "price": "32",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "h4opxzwcg",
+              "warehouse": "Default",
+              "sku": "MAGNA-DO-HH-Y",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        }
+      ]
+    },
+    "inventory": {
+      "stocks": [
+        {
+          "available": 880,
+          "warehouse": "Default"
+        }
+      ]
+    },
+    "pricing": {
+      "sellingPrice": 9909
+    },
+    "media": {
+      "images": [],
+      "videos": []
+    },
+    "attributes": [],
+    "marketplace": {
+      "channels": []
+    },
+    "listingStatus": {
+      "active": [],
+      "drafts": [],
+      "notListed": [],
+      "status": "Draft"
+    },
+    "suppliers": [],
+    "status": "active",
+    "createdAt": "2026-02-12T02:54:17.975Z",
+    "updatedAt": "2026-02-12T04:40:24.659Z"
+  },
+  {
+    "id": "16adca38-76e9-4d27-b37a-d48fcb74eaf9",
+    "meta": {
+      "id": "",
+      "company_id": "",
+      "created_by": "",
+      "updated_by": "",
+      "created_by_name": "",
+      "updated_by_name": "",
+      "created_at": "",
+      "updated_at": "",
+      "version": 1,
+      "status": "draft",
+      "is_published": false
+    },
+    "basicInfo": {
+      "sku": "Ea nemo ratione aut ",
+      "productIdentifierType": "upc",
+      "productIdentifierValue": "Optio doloremque eo",
+      "title": "Quas sapiente est re",
+      "category": "",
+      "condition": "refurbished",
+      "brand": "",
+      "manufacturer": "Qui possimus archit",
+      "msrp": "18",
+      "purchasePrice": "50",
+      "retailPrice": "16",
+      "map": "51",
+      "dimensionLength": "92",
+      "dimensionWidth": "14",
+      "dimensionHeight": "51",
+      "dimensionUnit": "cm",
+      "weightValue": "58",
+      "weightUnit": "lb",
+      "manufacturedCountry": "EH",
+      "manufacturedState": "",
+      "manufacturedCity": "",
+      "manufacturedPostalCode": "Sit velit commodo ea"
+    },
+    "description": {
+      "shortDescription": "Amet doloribus accu",
+      "mainDescription": "<p>Quam&nbsp;quis&nbsp;rerum&nbsp;inve.</p>",
+      "features": [
+        "Nobis rerum quos et ",
+        "Tempore aspernatur ",
+        "Adipisicing do volup",
+        "In ullamco quis offi",
+        "Labore consequat Eo"
+      ]
+    },
+    "variants": {
+      "themes": [
+        {
+          "name": "kk",
+          "values": [
+            "mm"
+          ]
+        },
+        {
+          "name": "kkn",
+          "values": [
+            "kk"
+          ]
+        }
+      ],
+      "hasVariation": true,
+      "variantItems": [
+        {
+          "id": "ybrrqksjq",
+          "combination": {
+            "kk": "mm",
+            "kkn": "kk"
+          },
+          "sku": "EA-NEMO--MM-KK",
+          "title": "Quas sapiente est re",
+          "barcode": "999",
+          "price": "16",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "p61h4psyr",
+              "warehouse": "Default",
+              "sku": "EA-NEMO--MM-KK",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        }
+      ]
+    },
+    "inventory": {
+      "stocks": [
+        {
+          "id": "1",
+          "warehouse": "Default",
+          "sku": "",
+          "available": 0,
+          "reserved": 0,
+          "price": "",
+          "binLocations": [
+            ""
+          ],
+          "priorityOrder": 0,
+          "isDefault": true
+        }
+      ]
+    },
+    "pricing": {
+      "costPrice": "",
+      "sellingPrice": "",
+      "discountType": "none",
+      "discountValue": "",
+      "taxClass": "standard"
+    },
+    "media": {
+      "images": [],
+      "videos": []
+    },
+    "attributes": [],
+    "marketplace": {
+      "channels": []
+    },
+    "listingStatus": {
+      "active": [],
+      "drafts": [],
+      "notListed": [],
+      "status": "Draft"
+    },
+    "suppliers": [],
+    "status": "active",
+    "createdAt": "2026-02-12T04:22:47.647Z"
+  },
+  {
+    "id": "1b35bf28-0bf9-48fb-a768-f079eff6d889",
+    "meta": {
+      "id": "1b35bf28-0bf9-48fb-a768-f079eff6d889",
+      "company_id": "",
+      "created_by": "",
+      "updated_by": "",
+      "created_at": "2026-02-12T04:23:31.665Z",
+      "updated_at": "",
+      "version": 1,
+      "status": "active",
+      "is_published": false
+    },
+    "basicInfo": {
+      "sku": "test",
+      "productIdentifierType": "asin",
+      "productIdentifierValue": "Vero incidunt conse",
+      "title": "Dicta magni perspici",
+      "category": "",
+      "condition": "new",
+      "brand": "",
+      "manufacturer": "Earum et placeat se",
+      "msrp": "44",
+      "purchasePrice": "76",
+      "retailPrice": "7",
+      "map": "57",
+      "dimensionLength": "12",
+      "dimensionWidth": "67",
+      "dimensionHeight": "21",
+      "dimensionUnit": "cm",
+      "weightValue": "6",
+      "weightUnit": "kg",
+      "manufacturedCountry": "MC",
+      "manufacturedState": "",
+      "manufacturedCity": "",
+      "manufacturedPostalCode": "Velit veniam disti"
+    },
+    "description": {
+      "shortDescription": "Error sequi tempore",
+      "mainDescription": "<p>Tenetur&nbsp;et&nbsp;vero&nbsp;sapi.</p>",
+      "features": [
+        "Fugiat dolorem comm",
+        "Suscipit distinctio",
+        "In quia velit ex do",
+        "Nostrum illum obcae",
+        "Id enim a ut minima"
+      ]
+    },
+    "variants": {
+      "themes": [
+        {
+          "name": "rrr",
+          "values": [
+            "ggg",
+            "hhh",
+            "cvb"
+          ]
+        },
+        {
+          "name": "bnnn",
+          "values": [
+            "sdf",
+            "hfhf"
+          ]
+        }
+      ],
+      "hasVariation": true,
+      "variantItems": [
+        {
+          "id": "rafe85jyh",
+          "combination": {
+            "rrr": "ggg",
+            "bnnn": "sdf"
+          },
+          "sku": "TEST-GGG-SDF",
+          "title": "Dicta magni perspici",
+          "barcode": "",
+          "price": "7",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "du98jl99e",
+              "warehouse": "Default",
+              "sku": "TEST-GGG-SDF",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "onujfqyhm",
+          "combination": {
+            "rrr": "ggg",
+            "bnnn": "hfhf"
+          },
+          "sku": "TEST-GGG-HFHF",
+          "title": "Dicta magni perspici",
+          "barcode": "",
+          "price": "7",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "vbgpkldhj",
+              "warehouse": "Default",
+              "sku": "TEST-GGG-HFHF",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "dzi98us69",
+          "combination": {
+            "rrr": "hhh",
+            "bnnn": "sdf"
+          },
+          "sku": "TEST-HHH-SDF",
+          "title": "Dicta magni perspici",
+          "barcode": "",
+          "price": "7",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "9uvlvq0qu",
+              "warehouse": "Default",
+              "sku": "TEST-HHH-SDF",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "o9p9m62sm",
+          "combination": {
+            "rrr": "hhh",
+            "bnnn": "hfhf"
+          },
+          "sku": "TEST-HHH-HFHF",
+          "title": "Dicta magni perspici",
+          "barcode": "",
+          "price": "7",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "nkzorjbtg",
+              "warehouse": "Default",
+              "sku": "TEST-HHH-HFHF",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "prz6nuunj",
+          "combination": {
+            "rrr": "cvb",
+            "bnnn": "sdf"
+          },
+          "sku": "TEST-CVB-SDF",
+          "title": "Dicta magni perspici",
+          "barcode": "",
+          "price": "7",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "6eqe0cmcv",
+              "warehouse": "Default",
+              "sku": "TEST-CVB-SDF",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "lmuje1q8m",
+          "combination": {
+            "rrr": "cvb",
+            "bnnn": "hfhf"
+          },
+          "sku": "TEST-CVB-HFHF",
+          "title": "Dicta magni perspici",
+          "barcode": "",
+          "price": "7",
+          "quantity": "0",
+          "minQuantity": "0",
+          "warehouse": "Default",
+          "stocks": [
+            {
+              "id": "k6eur4di7",
+              "warehouse": "Default",
+              "sku": "TEST-CVB-HFHF",
+              "available": 0,
+              "reserved": 0,
+              "binLocations": [
+                ""
+              ],
+              "priorityOrder": 0,
+              "isDefault": true
+            }
+          ]
+        }
+      ]
+    },
+    "inventory": {
+      "stocks": [
+        {
+          "id": "1",
+          "warehouse": "Default",
+          "sku": "",
+          "available": 0,
+          "reserved": 0,
+          "price": "",
+          "binLocations": [
+            ""
+          ],
+          "priorityOrder": 0,
+          "isDefault": true
+        }
+      ]
+    },
+    "pricing": {
+      "costPrice": "76",
+      "sellingPrice": "7",
+      "discountType": "none",
+      "discountValue": "",
+      "taxClass": "standard"
+    },
+    "media": {
+      "images": [],
+      "videos": []
+    },
+    "attributes": [],
+    "marketplace": {
+      "channels": []
+    },
+    "listingStatus": {
+      "active": [],
+      "drafts": [],
+      "notListed": [],
+      "status": "Draft"
+    },
+    "suppliers": [],
+    "status": "active",
+    "createdAt": "2026-02-12T04:23:31.665Z",
+    "updatedAt": "2026-02-12T04:59:20.992Z"
+  }
+]

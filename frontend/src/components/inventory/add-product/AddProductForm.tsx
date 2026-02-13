@@ -378,6 +378,31 @@ function AddProductFormContent({ id, variantId, mode = "page", onClose, isMarket
                     <span className="font-bold text-gray-300 dark:text-gray-700">N/A</span>
                   </div>
                 </div>
+
+                {data.meta.created_at && (
+                  <div className="border-t border-gray-50 dark:border-gray-800/50 pt-5 space-y-3">
+                    <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-gray-400">
+                      <span>Timeline</span>
+                      <svg className="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div className="space-y-2.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-semibold text-gray-400 truncate mr-2">First Created</span>
+                        <span className="text-[10px] font-bold text-gray-500 whitespace-nowrap bg-gray-50 dark:bg-gray-800/50 px-2 py-0.5 rounded-md border border-gray-100 dark:border-gray-700">
+                          {new Date(data.meta.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      </div>
+                      {data.meta.updated_at && (
+                        <div className="flex justify-between items-center animate-in fade-in slide-in-from-top-1 duration-300">
+                          <span className="text-[10px] font-semibold text-gray-400 truncate mr-2">Last Modified</span>
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 whitespace-nowrap bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-500/20">
+                            {new Date(data.meta.updated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

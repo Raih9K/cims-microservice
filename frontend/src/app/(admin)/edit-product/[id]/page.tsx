@@ -44,111 +44,98 @@ function EditProductLoader() {
               is_published: product.is_published || false,
             },
             basicInfo: {
-              sku: variantData ? (variantData.sku || "") : (product.sku || ""),
-              productIdentifierType: product.identifiers?.[0]?.product_identifier || "",
-              productIdentifierValue: variantData ? (variantData.barcode || "") : (product.identifiers?.[0]?.product_identifier_value || ""),
-              title: variantData ? (variantData.name || "") : (product.name || ""),
-              category: product.category || "",
-              condition: product.condition || "new",
-              brand: product.brand || "",
-              manufacturer: product.manufacturer_name || "",
-              msrp: "",
-              purchasePrice: variantData ? (variantData.cost_price?.toString() || "") : (product.cost_price?.toString() || ""),
-              retailPrice: variantData ? (variantData.selling_price?.toString() || "") : (product.selling_price?.toString() || ""),
-              map: "",
-              dimensionLength: product.dimensions?.length?.toString() || "",
-              dimensionWidth: product.dimensions?.width?.toString() || "",
-              dimensionHeight: product.dimensions?.height?.toString() || "",
-              dimensionUnit: product.dimensions?.dimension_unit || "inch",
-              weightValue: product.dimensions?.weight?.toString() || "",
-              weightUnit: product.dimensions?.weight_unit || "kg",
-              manufacturedCountry: product.manufacturer_country_code || "",
-              manufacturedState: product.manufacturer_state || "",
-              manufacturedCity: "",
-              manufacturedPostalCode: product.manufacturer_postal_code || "",
+              sku: product.basicInfo?.sku || (variantData ? (variantData.sku || "") : (product.sku || "")),
+              productIdentifierType: product.basicInfo?.productIdentifierType || product.identifiers?.[0]?.product_identifier || "",
+              productIdentifierValue: product.basicInfo?.productIdentifierValue || (variantData ? (variantData.barcode || "") : (product.identifiers?.[0]?.product_identifier_value || "")),
+              title: product.basicInfo?.title || (variantData ? (variantData.title || variantData.name || "") : (product.title || product.name || "")),
+              category: product.basicInfo?.category || product.category || "",
+              condition: product.basicInfo?.condition || product.condition || "new",
+              brand: product.basicInfo?.brand || product.brand || "",
+              manufacturer: product.basicInfo?.manufacturer || product.manufacturer_name || "",
+              msrp: product.basicInfo?.msrp || product.msrp?.toString() || "",
+              purchasePrice: product.basicInfo?.purchasePrice || (variantData ? (variantData.cost_price?.toString() || "") : (product.cost_price?.toString() || "")),
+              retailPrice: product.basicInfo?.retailPrice || (variantData ? (variantData.selling_price?.toString() || "") : (product.selling_price?.toString() || "")),
+              map: product.basicInfo?.map || product.map?.toString() || "",
+              dimensionLength: product.basicInfo?.dimensionLength || product.dimensions?.length?.toString() || "",
+              dimensionWidth: product.basicInfo?.dimensionWidth || product.dimensions?.width?.toString() || "",
+              dimensionHeight: product.basicInfo?.dimensionHeight || product.dimensions?.height?.toString() || "",
+              dimensionUnit: product.basicInfo?.dimensionUnit || product.dimensions?.dimension_unit || "inch",
+              weightValue: product.basicInfo?.weightValue || product.dimensions?.weight?.toString() || "",
+              weightUnit: product.basicInfo?.weightUnit || product.dimensions?.weight_unit || "kg",
+              manufacturedCountry: product.basicInfo?.manufacturedCountry || product.manufacturer_country_code || "",
+              manufacturedState: product.basicInfo?.manufacturedState || product.manufacturer_state || "",
+              manufacturedCity: product.basicInfo?.manufacturedCity || product.manufacturer_city || "",
+              manufacturedPostalCode: product.basicInfo?.manufacturedPostalCode || product.manufacturer_postal_code || "",
             },
             description: {
-              shortDescription: "",
-              mainDescription: product.description || "",
-              features: product.bullet_points?.length > 0
-                ? product.bullet_points.map((bp: any) => bp.bullet_text)
-                : (Array.isArray(product.features) ? product.features : ["", "", "", "", ""]),
+              shortDescription: product.description?.shortDescription || product.short_description || "",
+              mainDescription: product.description?.mainDescription || product.description || "",
+              features: product.description?.features?.length > 0
+                ? product.description.features
+                : (product.bullet_points?.length > 0
+                  ? product.bullet_points.map((bp: any) => bp.bullet_text)
+                  : (Array.isArray(product.features) ? product.features : ["", "", "", "", ""])),
             },
             variants: {
-              themes: [],
-              hasVariation: !variantData && product.type === "Variant",
-              // If we are editing a specific variant, we hide other variants from the UI
-              // by passing an empty list. This treats the form as a "Single Product" edit
-              // for the variant itself.
-              variantItems: variantData ? [] : (product.variants || []).map((v: any) => ({
-                id: v.id.toString(),
-                title: v.name,
-                sku: v.sku,
-                combination: v.attributes || {},
+              themes: product.variants?.themes || [],
+              hasVariation: product.variants?.hasVariation ?? (!!variantData || product.type === "Variant" || (product.variants?.variantItems?.length > 0)),
+              variantItems: variantData ? [] : (Array.isArray(product.variants) ? product.variants : (product.variants?.variantItems || [])).map((v: any) => ({
+                id: v.id?.toString() || Math.random().toString(36).substring(7),
+                title: v.title || v.name || "",
+                sku: v.sku || "",
+                combination: v.combination || v.attributes || {},
                 barcode: v.barcode || "",
-                price: v.selling_price?.toString() || "",
-                quantity: v.inventory_quantity?.toString() || "0",
+                price: v.price?.toString() || v.selling_price?.toString() || "",
+                quantity: v.quantity?.toString() || v.inventory_quantity?.toString() || "0",
                 warehouse: v.warehouse || "Default",
+                stocks: v.stocks || []
               })),
             },
             inventory: {
               stocks: variantData
-                ? [{
+                ? (variantData.stocks || [{
                   id: "1",
                   warehouse: "Default",
                   sku: variantData.sku || "",
-                  available: variantData.inventory_quantity || 0,
+                  available: variantData.quantity || variantData.inventory_quantity || 0,
                   reserved: 0,
                   binLocations: [],
                   priorityOrder: 0,
                   isDefault: true
-                }]
-                : (product.stock_levels?.length > 0
-                  ? product.stock_levels.map((sl: any) => ({
-                    id: sl.id.toString(),
-                    warehouse: sl.warehouse?.name || "Default",
-                    sku: product.sku || "",
-                    available: sl.available_quantity || 0,
-                    reserved: 0,
-                    binLocations: [product.bin || ""], // fallback bin
-                    priorityOrder: 0,
-                    isDefault: sl.warehouse?.is_default || false
-                  }))
-                  : [
-                    {
-                      id: "1",
-                      warehouse: product.warehouse || "Default",
-                      sku: product.sku || "",
-                      available: product.initial_quantity || 0,
-                      reserved: 0,
-                      binLocations: [product.bin || ""],
-                      priorityOrder: 0,
-                      isDefault: true
-                    }
-                  ]),
+                }])
+                : (product.inventory?.stocks || product.stock_levels?.map((sl: any) => ({
+                  id: sl.id?.toString() || Math.random().toString(),
+                  warehouse: sl.warehouse?.name || sl.warehouse || "Default",
+                  sku: sl.sku || product.sku || "",
+                  available: sl.available_quantity || sl.available || 0,
+                  reserved: sl.reserved_quantity || sl.reserved || 0,
+                  binLocations: sl.bin_locations || sl.binLocations || [product.bin || ""],
+                  priorityOrder: sl.priority_order || sl.priorityOrder || 0,
+                  isDefault: sl.warehouse?.is_default || sl.isDefault || false
+                })) || []),
             },
             pricing: {
-              costPrice: variantData ? (variantData.cost_price?.toString() || "") : (product.cost_price?.toString() || ""),
-              sellingPrice: variantData ? (variantData.selling_price?.toString() || "") : (product.selling_price?.toString() || ""),
-              discountType: product.discount_type || "none",
-              discountValue: product.discount_value?.toString() || "",
-              taxClass: product.tax_class || "standard",
+              costPrice: product.pricing?.costPrice || (variantData ? (variantData.cost_price?.toString() || "") : (product.cost_price?.toString() || "")),
+              sellingPrice: product.pricing?.sellingPrice || (variantData ? (variantData.selling_price?.toString() || "") : (product.selling_price?.toString() || "")),
+              discountType: product.pricing?.discountType || product.discount_type || "none",
+              discountValue: product.pricing?.discountValue?.toString() || product.discount_value?.toString() || "",
+              taxClass: product.pricing?.taxClass || product.tax_class || "standard",
             },
             media: {
-              images: variantData
+              images: product.media?.images || (variantData
                 ? (variantData.image ? [{
                   id: "0",
                   url: variantData.image,
                   type: 'url',
                   order: 0
                 }] : [])
-                : (product.images || []).map((url: string, index: number) => ({
+                : (product.images || []).map((img: any, index: number) => ({
                   id: index.toString(),
-                  url: url,
+                  url: typeof img === 'string' ? img : img.url,
                   type: 'url',
                   order: index
-                })),
-              videos: product.video_url ? [{ url: product.video_url, type: 'url' }] : [],
+                }))),
+              videos: product.media?.videos || (product.video_url ? [{ url: product.video_url, type: 'url' }] : []),
             },
             attributes: product.attributes || [],
             marketplace: product.marketplace || { channels: [] },

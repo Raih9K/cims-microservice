@@ -1,247 +1,206 @@
-# CIMS System API & Body Documentation
+# 📚 Complete API Documentation - User & Inventory Services
 
-This document outlines the available API endpoints and their expected request bodies for the CIMS system.
+## 🔧 Services Overview
 
-## Base URL
-
-`http://127.0.0.1:8000/api`
-
-## 1. Authentication
-
-### **Signup**
-
-**POST** `/signup`
-Registers a new company and admin user.
-
-```json
-{
-  "full_name": "John Doe",
-  "email": "admin@company.com",
-  "password": "password123",
-  "password_confirmation": "password123",
-  "company_name": "Acme Corp",
-  "business_type": "Retail",
-  "management_type": "team" // or "single"
-}
-```
-
-### **Login**
-
-**POST** `/login`
-Returns an authentication token.
-
-```json
-{
-  "email": "admin@company.com",
-  "password": "password123"
-}
-```
-
-### **Verify OTP**
-
-**POST** `/verify-otp`
-Verifies user email after signup.
-
-```json
-{
-  "email": "admin@company.com",
-  "otp": "123456"
-}
-```
-
-### **Get Current User**
-
-**GET** `/me`
-headers: `Authorization: Bearer <token>`
-_No Body Required_
+| Service               | Port | Base URL                  |
+| --------------------- | ---- | ------------------------- |
+| **User Service**      | 3001 | http://localhost:3001/api |
+| **Inventory Service** | 3002 | http://localhost:3002/api |
 
 ---
 
-## 2. Team Management
+# 👤 USER SERVICE APIs
 
-### **Send Invitation**
+## Base URL: `http://localhost:3001/api`
 
-**POST** `/team/invite`
-Invites a new member to the current company.
+### 1. Create User
+
+**POST** `/users`
+
+**Request Body:**
 
 ```json
 {
-  "email": "member@company.com",
-  "role": "Team Member" // Options: "Team Manager", "Team Member", "Viewer"
+  "name": "Alice Johnson",
+  "email": "alice@example.com",
+  "password": "secret123",
+  "companyId": 1
 }
 ```
 
-### **Switch Company**
-
-**POST** `/team/switch-company`
-Switches the active company context for the user.
+**Response (201 Created):**
 
 ```json
 {
-  "company_id": 2
-}
-```
-
-### **Accept Invitation**
-
-**POST** `/team/accept-invitation`
-Public endpoint for a user to join a team via token.
-
-```json
-{
-  "token": "invitation_token_string",
-  "password": "newpassword123", // Optional if user already exists
-  "name": "Jane Doe" // Optional
-}
-```
-
-### **Update Team Member**
-
-**PUT** `/team/{user_id}`
-Updates role or status of a team member.
-
-```json
-{
-  "name": "Jane Doe Updated", // Optional
-  "role": "Team Manager", // Optional
-  "status": "active" // Optional: "active" or "inactive"
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Alice Johnson",
+    "email": "alice@example.com",
+    "status": "active",
+    "companyId": 1,
+    "createdAt": "2026-02-12T08:30:00.000Z",
+    "updatedAt": "2026-02-12T08:30:00.000Z"
+  }
 }
 ```
 
 ---
 
-## 3. Product Management
+### 2. Get All Users
 
-### **Create Product**
+**GET** `/users`
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Alice Johnson",
+      "email": "alice@example.com",
+      "status": "active",
+      "companyId": 1
+    }
+  ]
+}
+```
+
+---
+
+### 3. Get User by ID
+
+**GET** `/users/:id`
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": { "id": "...", "name": "...", "email": "..." }
+}
+```
+
+---
+
+### 4. Update User
+
+**PUT** `/users/:id`
+
+**Request Body:**
+
+```json
+{
+  "name": "Alice Smith",
+  "status": "inactive"
+}
+```
+
+---
+
+### 5. Delete User
+
+**DELETE** `/users/:id`
+
+---
+
+# 📦 INVENTORY SERVICE APIs
+
+## Base URL: `http://localhost:3002/api`
+
+### 1. Create Product
 
 **POST** `/products`
-Creates a new product. Supports Simple and Variant products.
 
-**Complete Body Example:**
+**Request Body:**
 
 ```json
 {
-  "basicInfo": {
-    "title": "Premium Wireless Mouse",
-    "sku": "MOUSE-MX-001",
-    "category": "Electronics",
-    "brand": "Logitech",
-    "productIdentifierType": "UPC",
-    "productIdentifierValue": "123456789012",
-    "dimensionLength": 10,
-    "dimensionWidth": 5,
-    "dimensionHeight": 2,
-    "weightValue": 0.5,
-    "weightUnit": "kg",
-    "dimensionUnit": "inch"
-  },
-  "description": {
-    "mainDescription": "High precision wireless mouse.",
-    "features": ["Ergonomic Design", "Long Battery Life"]
-  },
-  "pricing": {
-    "sellingPrice": 99.99,
-    "costPrice": 60.0,
-    "discountType": "percentage",
-    "discountValue": 10,
-    "taxClass": "standard"
-  },
-  "inventory": {
-    "stocks": [
-      {
-        "warehouse": "Default",
-        "available": 150,
-        "binLocations": ["A1-05"],
-        "isDefault": true
-      }
-    ]
-  },
-  "media": {
-    "images": [
-      "https://example.com/image1.png",
-      "https://example.com/image2.png"
-    ]
-  },
-  "variants": {
-    "hasVariation": true,
-    "variantItems": [
-      {
-        "title": "Mouse - Red",
-        "sku": "MOUSE-MX-RED",
-        "price": 99.99,
-        "quantity": 50,
-        "combination": { "Color": "Red" }
-      },
-      {
-        "title": "Mouse - Blue",
-        "sku": "MOUSE-MX-BLU",
-        "price": 99.99,
-        "quantity": 50,
-        "combination": { "Color": "Blue" }
-      }
-    ]
-  },
-  "listingStatus": {
-    "status": "Active" // or "Draft"
-  }
+  "name": "iPhone 15 Pro",
+  "sku": "APP-IP15P-256",
+  "brand": "Apple",
+  "category": "Electronics",
+  "sellingPrice": 999.99,
+  "costPrice": 750.0,
+  "stock": 50,
+  "minStock": 10,
+  "companyId": 1
 }
 ```
 
-### **Update Product**
-
-**PUT** `/products/{id}`
-Updates an existing product. Uses the same body structure as Create. Allows partial updates.
-
-### **Update Variant**
-
-**PUT** `/products/{id}/variants/{variant_id}`
-Updates a specific variant.
+**Response (201 Created):**
 
 ```json
 {
-  "basicInfo": {
-    "title": "Mouse - Red V2",
-    "sku": "MOUSE-MX-RED-V2"
-  },
-  "pricing": {
-    "sellingPrice": 105.0
-  },
-  "inventory": {
-    "stocks": [
-      {
-        "available": 60
-      }
-    ]
+  "success": true,
+  "data": {
+    "id": "750e8400-e29b-41d4-a716-446655440000",
+    "sku": "APP-IP15P-256",
+    "stock": 50,
+    "status": "active"
   }
 }
 ```
 
 ---
 
-## 4. Resource Management (Standard CRUD)
+### 2. Get All Products
 
-These endpoints follow standard REST patterns. Example for **Brands**.
+**GET** `/products`
 
-- **Endpoints**:
-  - `GET /api/brands`
-  - `POST /api/brands`
-  - `PUT /api/brands/{id}`
-  - `DELETE /api/brands/{id}`
+---
 
-- **Typical Body:**
+### 3. Get Product by ID
+
+**GET** `/products/:id`
+
+---
+
+### 4. Update Product
+
+**PUT** `/products/:id`
+
+**Request Body:**
 
 ```json
 {
-  "name": "Nike",
-  "description": "Sportswear brand",
-  "website": "https://nike.com"
+  "sellingPrice": 1099.99,
+  "stock": 75
 }
 ```
 
-**Available Resources:**
+---
 
-- `warehouses`
-- `categories`
-- `suppliers`
-- `attributes`
-- `stock-levels`
+### 5. Adjust Stock
+
+**POST** `/products/:id/stock`
+
+**Request Body:**
+
+```json
+{
+  "quantity": 20
+}
+```
+
+_(Positive to add, negative to subtract)_
+
+---
+
+### 6. Delete Product
+
+**DELETE** `/products/:id`
+
+---
+
+## 🚀 Testing with Curl
+
+```bash
+# Create User
+curl -X POST http://localhost:3001/api/users -H "Content-Type: application/json" -d "{\"name\":\"John\",\"email\":\"john@test.com\"}"
+
+# Create Product
+curl -X POST http://localhost:3002/api/products -H "Content-Type: application/json" -d "{\"name\":\"Laptop\",\"sku\":\"LAP-001\",\"sellingPrice\":500,\"stock\":10}"
+```
