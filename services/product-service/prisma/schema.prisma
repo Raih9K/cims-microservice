@@ -13,21 +13,60 @@ datasource db {
 model Product {
   id                Int       @id @default(autoincrement())
   companyId         Int       // Multi-tenant isolation
-  name              String
+  name              String    // Display Name / Title
   type              ProductType @default(SIMPLE)
   sku               String?   @unique
-  description       String?   @db.Text
-  uom               String?   // Unit of Measure
+  productIdentifierType  String?
+  productIdentifierValue String?
+  condition         String?   @default("new")
+  manufacturer      String?
   status            String    @default("Draft") // Draft, Active, Archived
+
+  // Pricing
+  msrp              Decimal?  @db.Decimal(15, 2)
+  purchasePrice     Decimal?  @db.Decimal(15, 2)
+  retailPrice       Decimal?  @db.Decimal(15, 2)
+  map               Decimal?  @db.Decimal(15, 2)
+
+  // Dimensions
+  dimensionLength   Decimal?  @db.Decimal(10, 2)
+  dimensionWidth    Decimal?  @db.Decimal(10, 2)
+  dimensionHeight   Decimal?  @db.Decimal(10, 2)
+  dimensionUnit     String?   @default("inch")
+  weightValue       Decimal?  @db.Decimal(10, 2)
+  weightUnit        String?   @default("kg")
+
+  // Origin
+  manufacturedCountry    String?
+  manufacturedState      String?
+  manufacturedCity       String?
+  manufacturedPostalCode String?
+
+  // Description
+  shortDescription  String?   @db.Text
+  mainDescription   String?   @db.Text
+  features          Json?     // Array of strings
+
   brandId           Int?
   brand             Brand?    @relation(fields: [brandId], references: [id])
   categoryId        Int?
   category          Category? @relation(fields: [categoryId], references: [id])
+
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   variants          Variant[]
   images            ProductImage[]
+  suppliers         ProductSupplier[]
+  attributes        ProductAttribute[]
+}
+
+model ProductAttribute {
+  id                Int       @id @default(autoincrement())
+  productId         Int
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name              String
+  value             String
 }
 
 enum ProductType {
@@ -57,6 +96,7 @@ model Category {
   companyId         Int
   name              String
   parentId          Int?
+  status            String    @default("active")
   parent            Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children          Category[] @relation("CategoryHierarchy")
   createdAt         DateTime  @default(now())
@@ -71,6 +111,7 @@ model Brand {
   name              String
   description       String?
   logo              String?
+  isActive          Boolean   @default(true)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -92,4 +133,46 @@ model VariantAttribute {
   variant           Variant   @relation(fields: [variantId], references: [id], onDelete: Cascade)
   name              String    // e.g., "Color"
   value             String    // e.g., "Red"
+}
+
+model GlobalAttribute {
+  id                Int       @id @default(autoincrement())
+  companyId         Int
+  name              String
+  type              String    @default("text") // text, select, multi-select
+  options           Json?     // Array of options if type is select
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Supplier {
+  id                Int       @id @default(autoincrement())
+  companyId         Int
+  name              String
+  code              String?
+  contactPerson     String?
+  email             String?
+  phone             String?
+  address           String?
+  country           String?
+  state             String?
+  city              String?
+  zipCode           String?
+  status            String    @default("active")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  products          ProductSupplier[]
+}
+
+model ProductSupplier {
+  productId         Int
+  supplierId        Int
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplier          Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  purchasePrice     Decimal?  @db.Decimal(15, 2)
+  leadTime          Int?      // in days
+  isDefault         Boolean   @default(false)
+
+  @@id([productId, supplierId])
 }

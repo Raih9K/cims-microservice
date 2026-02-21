@@ -11,17 +11,26 @@ async function bootstrap() {
       router: (req) => {
         const url: string = req.url || '';
         const full = url.startsWith('/') ? '/api' + url : '/api/' + url;
-        const inv = [
-          '/api/products',
+
+        const inventoryEndpoints = [
           '/api/warehouses',
-          '/api/categories',
-          '/api/brands',
           '/api/inventory',
-          '/api/suppliers',
-          '/api/attributes',
           '/api/stock-levels',
         ];
-        if (inv.some((p) => full.startsWith(p))) return 'http://localhost:3002';
+
+        const productEndpoints = [
+          '/api/products',
+          '/api/categories',
+          '/api/brands',
+          '/api/suppliers',
+          '/api/attributes',
+        ];
+
+        if (inventoryEndpoints.some((p) => full.startsWith(p)))
+          return 'http://localhost:3003';
+        if (productEndpoints.some((p) => full.startsWith(p)))
+          return 'http://localhost:3002';
+
         return 'http://localhost:3001';
       },
       changeOrigin: true,

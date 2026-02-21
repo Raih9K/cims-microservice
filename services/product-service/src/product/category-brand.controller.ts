@@ -1,42 +1,46 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Post,
-    Put,
-    Query,
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
 } from '@nestjs/common';
-import { ProductService } from './product.service'; // I'll assume ProductService handles these or I'll create new ones
+import { ProductService } from './product.service';
 
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  create(@Body() data: any) {
+  async create(@Body() data: any) {
     return this.productService.createCategory(data);
   }
 
   @Get()
-  findAll(@Query('companyId', ParseIntPipe) companyId: number) {
+  async findAll(
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe)
+    companyId: number,
+  ) {
     return this.productService.findAllCategories(companyId);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productService.findOneCategory(id);
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
     return this.productService.updateCategory(id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.deleteCategory(id);
   }
 }
@@ -46,27 +50,66 @@ export class BrandController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  create(@Body() data: any) {
+  async create(@Body() data: any) {
     return this.productService.createBrand(data);
   }
 
   @Get()
-  findAll(@Query('companyId', ParseIntPipe) companyId: number) {
+  async findAll(
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe)
+    companyId: number,
+  ) {
     return this.productService.findAllBrands(companyId);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productService.findOneBrand(id);
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
     return this.productService.updateBrand(id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.deleteBrand(id);
+  }
+}
+
+@Controller('suppliers')
+export class SupplierController {
+  constructor(private readonly productService: ProductService) {}
+
+  @Post()
+  async create(@Body() data: any) {
+    return this.productService.createSupplier(data);
+  }
+
+  @Get()
+  async findAll(
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe)
+    companyId: number,
+  ) {
+    return this.productService.findAllSuppliers(companyId);
+  }
+}
+
+@Controller('attributes')
+export class AttributeController {
+  constructor(private readonly productService: ProductService) {}
+
+  @Post()
+  async create(@Body() data: any) {
+    return this.productService.createAttribute(data);
+  }
+
+  @Get()
+  async findAll(
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe)
+    companyId: number,
+  ) {
+    return this.productService.findAllAttributes(companyId);
   }
 }
