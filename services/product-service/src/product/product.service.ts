@@ -1,11 +1,11 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -247,13 +247,17 @@ export class ProductService {
   }
 
   async update(id: number, data: any) {
+    const updateData = data as {
+      basicInfo?: { title?: string; sku?: string };
+      description?: { shortDescription?: string; mainDescription?: string };
+    };
     return this.prisma.product.update({
       where: { id: Number(id) },
       data: {
-        name: data.basicInfo?.title,
-        sku: data.basicInfo?.sku,
-        shortDescription: data.description?.shortDescription,
-        mainDescription: data.description?.mainDescription,
+        name: updateData.basicInfo?.title,
+        sku: updateData.basicInfo?.sku,
+        shortDescription: updateData.description?.shortDescription,
+        mainDescription: updateData.description?.mainDescription,
       },
     });
   }
@@ -265,11 +269,17 @@ export class ProductService {
 
   // Categories
   async createCategory(data: any) {
+    const categoryData = data as {
+      category_name?: string;
+      name?: string;
+      companyId?: number;
+      status?: string;
+    };
     return this.prisma.category.create({
       data: {
-        name: data.category_name || data.name,
-        companyId: data.companyId || 1,
-        status: data.status || 'active',
+        name: categoryData.category_name || categoryData.name || '',
+        companyId: categoryData.companyId || 1,
+        status: categoryData.status || 'active',
       },
     });
   }
@@ -285,7 +295,10 @@ export class ProductService {
   }
 
   async updateCategory(id: number, data: any) {
-    return this.prisma.category.update({ where: { id: Number(id) }, data });
+    return this.prisma.category.update({
+      where: { id: Number(id) },
+      data: data as Record<string, unknown>,
+    });
   }
 
   async deleteCategory(id: number) {
@@ -294,11 +307,17 @@ export class ProductService {
 
   // Brands
   async createBrand(data: any) {
+    const brandData = data as {
+      brand_name?: string;
+      name?: string;
+      companyId?: number;
+      isActive?: boolean;
+    };
     return this.prisma.brand.create({
       data: {
-        name: data.brand_name || data.name,
-        companyId: data.companyId || 1,
-        isActive: data.isActive !== undefined ? data.isActive : true,
+        name: brandData.brand_name || brandData.name || '',
+        companyId: brandData.companyId || 1,
+        isActive: brandData.isActive !== undefined ? brandData.isActive : true,
       },
     });
   }
@@ -314,7 +333,10 @@ export class ProductService {
   }
 
   async updateBrand(id: number, data: any) {
-    return this.prisma.brand.update({ where: { id: Number(id) }, data });
+    return this.prisma.brand.update({
+      where: { id: Number(id) },
+      data: data as Record<string, unknown>,
+    });
   }
 
   async deleteBrand(id: number) {
@@ -329,11 +351,13 @@ export class ProductService {
   }
 
   async createSupplier(data: any) {
+    const supplierData = data as { companyId?: number } & Record<string, any>;
     return this.prisma.supplier.create({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data: {
-        ...data,
-        companyId: data.companyId || 1,
-      },
+        ...supplierData,
+        companyId: supplierData.companyId || 1,
+      } as any,
     });
   }
 
@@ -345,11 +369,13 @@ export class ProductService {
   }
 
   async createAttribute(data: any) {
+    const attributeData = data as { companyId?: number } & Record<string, any>;
     return this.prisma.globalAttribute.create({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data: {
-        ...data,
-        companyId: data.companyId || 1,
-      },
+        ...attributeData,
+        companyId: attributeData.companyId || 1,
+      } as any,
     });
   }
 }
