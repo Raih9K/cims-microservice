@@ -1,9 +1,9 @@
 import {
-    BadRequestException,
-    ConflictException,
-    Injectable
+  BadRequestException,
+  ConflictException,
+  Injectable,
 } from '@nestjs/common';
-import { TransactionType } from '@prisma/client';
+import { TransactionType } from '../prisma/generated-client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateStockDto } from './dto/update-stock.dto';
 

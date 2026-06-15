@@ -1,5 +1,5 @@
-import { ManagementType } from '@prisma/client';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { ManagementType } from '../../prisma/generated-client';
 
 export class UpdateCompanyDto {
   @IsString()

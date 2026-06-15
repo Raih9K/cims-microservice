@@ -1,0 +1,4 @@
+External_Id__c,Name,BillingCountryCode,BillingStateCode
+POSTMAN_001,Postman,US,CA
+POSTMAN_002,Postman 2,US,NY
+POSTMAN_003,Postman 3,CA,ON

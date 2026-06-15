@@ -1,4 +1,3 @@
-import { TransactionType } from '@prisma/client';
 import {
     IsEnum,
     IsInt,
@@ -6,6 +5,7 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator';
+import { TransactionType } from '../../prisma/generated-client';
 
 export class UpdateStockDto {
   @IsInt()

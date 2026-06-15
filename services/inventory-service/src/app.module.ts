@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { InventoryModule } from './inventory/inventory.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { WarehouseModule } from './warehouse/warehouse.module';
 
 @Module({
   imports: [InventoryModule, PrismaModule, WarehouseModule],

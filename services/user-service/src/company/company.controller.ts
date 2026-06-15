@@ -26,7 +26,7 @@ export class CompanyController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Request() req,
+    @Request() req: any,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
     return this.companyService.update(id, req.user.userId, updateCompanyDto);

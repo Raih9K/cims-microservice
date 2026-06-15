@@ -36,10 +36,23 @@ services:
       - PORT=3000
       - USE_MOCK_DB=true
       - MOCK_DB_URL=http://mock-db:80
+      - USER_SERVICE_URL=http://user-service:3001
+      - PRODUCT_SERVICE_URL=http://product-service:3002
+      - INVENTORY_SERVICE_URL=http://inventory-service:3003
+      - SHOPIFY_SERVICE_URL=http://shopify-service:3004
+      - MARKETPLACE_SERVICE_URL=http://marketplace-service:3005
+      - AUDIT_SERVICE_URL=http://audit-service:3006
+      - ORDER_SERVICE_URL=http://order-service:3007
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3008
     depends_on:
       - user-service
       - product-service
       - inventory-service
+      - shopify-service
+      - marketplace-service
+      - audit-service
+      - order-service
+      - notification-service
 
   user-service:
     build:

@@ -20,7 +20,7 @@ export class TeamController {
 
   @UseGuards(JwtAuthGuard)
   @Post('invite')
-  invite(@Body() inviteMemberDto: InviteMemberDto, @Request() req) {
+  invite(@Body() inviteMemberDto: InviteMemberDto, @Request() req: any) {
     return this.teamService.inviteMember(inviteMemberDto, req.user.userId);
   }
 
