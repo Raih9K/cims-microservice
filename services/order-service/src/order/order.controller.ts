@@ -7,6 +7,7 @@ import {
     Patch,
     Post,
     Query,
+    DefaultValuePipe,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
@@ -21,14 +22,14 @@ export class OrderController {
   }
 
   @Get()
-  findAll(@Query('companyId', ParseIntPipe) companyId: number) {
+  findAll(@Query('companyId', new DefaultValuePipe(1), ParseIntPipe) companyId: number) {
     return this.orderService.findAll(companyId);
   }
 
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe) id: number,
-    @Query('companyId', ParseIntPipe) companyId: number,
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe) companyId: number,
   ) {
     return this.orderService.findOne(id, companyId);
   }
@@ -36,7 +37,7 @@ export class OrderController {
   @Patch(':id/status')
   updateStatus(
     @Param('id', ParseIntPipe) id: number,
-    @Query('companyId', ParseIntPipe) companyId: number,
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe) companyId: number,
     @Body('status') status: string,
   ) {
     return this.orderService.updateStatus(id, companyId, status);

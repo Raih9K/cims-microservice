@@ -15,7 +15,8 @@
     "dev:audit": "npm run start:dev -w services/audit-service",
     "dev:order": "npm run start:dev -w services/order-service",
     "dev:notification": "npm run start:dev -w services/notification-service",
-    "dev:all": "concurrently --kill-others \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:product\" \"npm run dev:inventory\" \"npm run dev:shopify\" \"npm run dev:marketplace\" \"npm run dev:audit\" \"npm run dev:order\" \"npm run dev:notification\""
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:all": "concurrently --kill-others \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:product\" \"npm run dev:inventory\" \"npm run dev:shopify\" \"npm run dev:marketplace\" \"npm run dev:audit\" \"npm run dev:order\" \"npm run dev:notification\" \"npm run dev:frontend\""
   },
   "workspaces": [
     "services/*",

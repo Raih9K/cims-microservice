@@ -5,6 +5,7 @@ import {
     Param,
     ParseIntPipe,
     Patch,
+    Put,
     Request,
     UseGuards,
 } from '@nestjs/common';
@@ -15,6 +16,24 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  findMyCompany(@Request() req: any) {
+    return this.companyService.findUserCompany(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  updateMyCompany(@Request() req: any, @Body() updateCompanyDto: UpdateCompanyDto) {
+    return this.companyService.updateUserCompany(req.user.userId, updateCompanyDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  updateMyCompanyPut(@Request() req: any, @Body() updateCompanyDto: UpdateCompanyDto) {
+    return this.companyService.updateUserCompany(req.user.userId, updateCompanyDto);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')

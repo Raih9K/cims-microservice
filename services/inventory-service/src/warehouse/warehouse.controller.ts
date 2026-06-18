@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { WarehouseService } from './warehouse.service';
 
@@ -21,7 +22,10 @@ export class WarehouseController {
   }
 
   @Get()
-  findAll(@Query('companyId', ParseIntPipe) companyId: number) {
+  findAll(
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe)
+    companyId: number,
+  ) {
     return this.warehouseService.findAll(companyId);
   }
 

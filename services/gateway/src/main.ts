@@ -43,6 +43,12 @@ async function bootstrap() {
       }
 
       const userProfile = await response.json();
+      if (userProfile) {
+        if (userProfile.company_id) {
+          req.headers['x-company-id'] = userProfile.company_id.toString();
+        }
+        req.headers['x-user-id'] = userProfile.id.toString();
+      }
       const packageName = userProfile?.company?.package?.name || 'Starter';
 
       // Define endpoint restrictions per package
@@ -144,8 +150,13 @@ async function bootstrap() {
       },
       changeOrigin: true,
       pathRewrite: (path: string) => {
-        // Microservices expect the '/api' prefix (e.g. /api/products)
-        return path.startsWith('/') ? '/api' + path : '/api/' + path;
+        let rewritten = path;
+        if (path.startsWith('/listings')) {
+          rewritten = '/marketplace' + path;
+        } else if (path.startsWith('/channels')) {
+          rewritten = '/marketplace' + path;
+        }
+        return rewritten.startsWith('/') ? '/api' + rewritten : '/api/' + rewritten;
       },
     }),
   );

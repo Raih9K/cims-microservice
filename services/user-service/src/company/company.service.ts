@@ -19,6 +19,15 @@ export class CompanyService {
     return company;
   }
 
+  async findUserCompany(userId: number) {
+    const membership = await this.prisma.membership.findFirst({
+      where: { userId },
+      select: { companyId: true }
+    });
+    if (!membership) throw new NotFoundException(`No company found for user #${userId}`);
+    return this.findOne(membership.companyId);
+  }
+
   async update(id: number, ownerId: number, dto: UpdateCompanyDto) {
     const company = await this.findOne(id);
     if (company.ownerId !== ownerId) {
@@ -29,5 +38,14 @@ export class CompanyService {
       where: { id },
       data: dto,
     });
+  }
+
+  async updateUserCompany(userId: number, dto: UpdateCompanyDto) {
+    const membership = await this.prisma.membership.findFirst({
+      where: { userId },
+      select: { companyId: true }
+    });
+    if (!membership) throw new NotFoundException(`No company found for user #${userId}`);
+    return this.update(membership.companyId, userId, dto);
   }
 }

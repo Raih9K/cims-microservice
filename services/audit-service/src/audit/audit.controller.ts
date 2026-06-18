@@ -5,6 +5,7 @@ import {
     ParseIntPipe,
     Post,
     Query,
+    DefaultValuePipe,
 } from '@nestjs/common';
 import { AuditService } from './audit.service';
 import { CreateAuditLogDto } from './dto/create-audit-log.dto';
@@ -20,7 +21,7 @@ export class AuditController {
 
   @Get()
   findAll(
-    @Query('companyId', ParseIntPipe) companyId: number,
+    @Query('companyId', new DefaultValuePipe(1), ParseIntPipe) companyId: number,
     @Query('entityType') entityType?: string,
     @Query('entityId') entityId?: string,
   ) {

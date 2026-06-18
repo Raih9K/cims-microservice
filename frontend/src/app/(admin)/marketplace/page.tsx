@@ -36,6 +36,53 @@ export default function MarketplaceInventoryPage() {
   const [pagination, setPagination] = useState({ total: 0, currentPage: 1, lastPage: 1 });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isIntegrationOpen, setIsIntegrationOpen] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [shopifyDomain, setShopifyDomain] = useState("");
+  const [shopifyAccessToken, setShopifyAccessToken] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const closeIntegrationDrawer = () => {
+    setIsIntegrationOpen(false);
+    setSelectedPlatform(null);
+    setShopifyDomain("");
+    setShopifyAccessToken("");
+  };
+
+  const handleConnectShopify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!shopifyDomain || !shopifyAccessToken) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    setIsConnecting(true);
+    try {
+      let domain = shopifyDomain.trim();
+      domain = domain.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+      if (!domain.includes('.')) {
+        domain = `${domain}.myshopify.com`;
+      }
+
+      const response = await integrationService.connectManualShopify({
+        shop_domain: domain,
+        access_token: shopifyAccessToken.trim()
+      });
+
+      if (response.success) {
+        toast.success("Shopify channel successfully initialized!");
+        closeIntegrationDrawer();
+        fetchMarketplaces();
+        fetchListings();
+      } else {
+        toast.error(response.message || "Failed to establish Shopify handshake.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message || "Network error during Shopify handshake.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
 
   // Get values from URL or defaults
   const paramId = searchParams.get('id');
@@ -268,7 +315,7 @@ export default function MarketplaceInventoryPage() {
           <div className="fixed inset-0 z-[100] flex justify-end">
             <div
               className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm animate-fadeIn"
-              onClick={() => setIsIntegrationOpen(false)}
+              onClick={closeIntegrationDrawer}
             />
             <div className="relative w-full max-w-xl bg-white h-full shadow-2xl animate-slideInRight overflow-y-auto">
               <div className="p-10">
@@ -277,29 +324,114 @@ export default function MarketplaceInventoryPage() {
                     <h2 className="text-xl font-bold text-gray-800 tracking-tight uppercase">Integrate New Channel</h2>
                     <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1">Expansion Handshake</p>
                   </div>
-                  <button onClick={() => setIsIntegrationOpen(false)} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-rose-50 hover:text-rose-500 transition-all">
+                  <button onClick={closeIntegrationDrawer} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-rose-50 hover:text-rose-500 transition-all">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { id: 'shopify', name: 'Shopify', logo: 'https://www.vectorlogo.zone/logos/shopify/shopify-icon.svg', color: 'text-emerald-600' },
-                    { id: 'ebay', name: 'eBay', logo: 'https://www.vectorlogo.zone/logos/ebay/ebay-icon.svg', color: 'text-blue-600' },
-                    { id: 'amazon', name: 'Amazon', logo: 'https://www.vectorlogo.zone/logos/amazon/amazon-icon.svg', color: 'text-orange-600' },
-                    { id: 'tiktok', name: 'TikTok', logo: 'https://www.vectorlogo.zone/logos/tiktok/tiktok-icon.svg', color: 'text-gray-900' },
-                  ].map((channel) => (
-                    <button
-                      key={channel.id}
-                      className="p-6 rounded-[2rem] border border-gray-100 hover:border-brand-500 hover:shadow-lg transition-all group flex flex-col items-center gap-4 bg-gray-50/30 hover:bg-white"
-                    >
-                      <div className="w-12 h-12 flex items-center justify-center">
-                        <NextImage src={channel.logo} alt={channel.name} width={40} height={40} className="object-contain" unoptimized />
+                {selectedPlatform === 'shopify' ? (
+                  <form onSubmit={handleConnectShopify} className="space-y-6 animate-fadeIn">
+                    <div className="flex items-center gap-3 mb-6">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPlatform(null)}
+                        className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <NextImage
+                          src="https://www.vectorlogo.zone/logos/shopify/shopify-icon.svg"
+                          alt="Shopify"
+                          width={24}
+                          height={24}
+                          className="object-contain"
+                          unoptimized
+                        />
+                        <span className="text-sm font-black text-emerald-600 uppercase tracking-widest">Shopify Connect Protocol</span>
                       </div>
-                      <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 group-hover:text-brand-600">{channel.name}</span>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                          Shop Domain / URL
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={shopifyDomain}
+                          onChange={(e) => setShopifyDomain(e.target.value)}
+                          placeholder="your-store.myshopify.com"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-sm font-bold text-gray-800 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                        />
+                        <p className="text-[10px] text-gray-400 mt-1 font-medium">
+                          Enter your store name (e.g. quickstart-1234) or your full .myshopify.com domain.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                          Admin Access Token
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={shopifyAccessToken}
+                          onChange={(e) => setShopifyAccessToken(e.target.value)}
+                          placeholder="shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 text-sm font-bold text-gray-800 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner font-mono"
+                        />
+                        <p className="text-[10px] text-gray-400 mt-1 font-medium">
+                          Generated from your Shopify Admin -&gt; Settings -&gt; Apps and sales channels -&gt; Develop apps.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isConnecting}
+                      className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isConnecting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                          <span>Establishing Handshake...</span>
+                        </>
+                      ) : (
+                        <span>Connect Shopify Store</span>
+                      )}
                     </button>
-                  ))}
-                </div>
+                  </form>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { id: 'shopify', name: 'Shopify', logo: 'https://www.vectorlogo.zone/logos/shopify/shopify-icon.svg', color: 'text-emerald-600' },
+                      { id: 'ebay', name: 'eBay', logo: 'https://www.vectorlogo.zone/logos/ebay/ebay-icon.svg', color: 'text-blue-600' },
+                      { id: 'amazon', name: 'Amazon', logo: 'https://www.vectorlogo.zone/logos/amazon/amazon-icon.svg', color: 'text-orange-600' },
+                      { id: 'tiktok', name: 'TikTok', logo: 'https://www.vectorlogo.zone/logos/tiktok/tiktok-icon.svg', color: 'text-gray-900' },
+                    ].map((channel) => (
+                      <button
+                        key={channel.id}
+                        onClick={() => {
+                          if (channel.id === 'shopify') {
+                            setSelectedPlatform('shopify');
+                          } else {
+                            toast.error(`${channel.name} integration protocol is currently read-only.`);
+                          }
+                        }}
+                        className="p-6 rounded-[2rem] border border-gray-100 hover:border-brand-500 hover:shadow-lg transition-all group flex flex-col items-center gap-4 bg-gray-50/30 hover:bg-white"
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center">
+                          <NextImage src={channel.logo} alt={channel.name} width={40} height={40} className="object-contain" unoptimized />
+                        </div>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 group-hover:text-brand-600">{channel.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-12 p-8 rounded-[2rem] bg-brand-50/50 border border-brand-100 border-dashed">
                   <div className="flex gap-4">
