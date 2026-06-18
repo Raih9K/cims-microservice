@@ -41,6 +41,8 @@ model Company {
   updatedAt         DateTime  @updatedAt
 
   memberships       Membership[]
+  subscription      Subscription?
+  payments          Payment[]
 }
 
 enum ManagementType {
@@ -99,4 +101,41 @@ model RefreshToken {
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt         DateTime
   createdAt         DateTime  @default(now())
+}
+
+model Package {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique // Starter, Pro, Enterprise
+  price         Decimal        @db.Decimal(10, 2)
+  maxSeats      Int            @default(2)
+  features      Json           // Array of strings
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id            Int            @id @default(autoincrement())
+  companyId     Int            @unique
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  packageId     Int
+  package       Package        @relation(fields: [packageId], references: [id])
+  status        String         @default("trial") // trial, active, expired, cancelled
+  startsAt      DateTime       @default(now())
+  endsAt        DateTime
+  couponCode    String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Payment {
+  id            Int            @id @default(autoincrement())
+  companyId     Int
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  amount        Decimal        @db.Decimal(10, 2)
+  status        String         @default("pending") // pending, succeeded, failed
+  transactionId String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }

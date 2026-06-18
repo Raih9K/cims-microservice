@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/prisma/generated-client"
 }
 
 datasource db {
@@ -11,22 +12,22 @@ datasource db {
 }
 
 model Channel {
-  id                Int       @id @default(autoincrement())
-  companyId         Int
-  name              String
-  platform          Platform
-  status            String    @default("active") // active, inactive, error
-  credentials       Json?     // Encrypted keys should be handled at app layer
-  storeUrl          String?
-  lastSyncAt        DateTime?
-  syncError         String?   @db.Text
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id          Int            @id @default(autoincrement())
+  companyId   Int
+  name        String
+  platform    MarketPlatform
+  status      String         @default("active") // active, inactive, error
+  credentials Json?          // Encrypted keys should be handled at app layer
+  storeUrl    String?
+  lastSyncAt  DateTime?
+  syncError   String?        @db.Text
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
-  listings          Listing[]
+  listings Listing[]
 }
 
-enum Platform {
+enum MarketPlatform {
   SHOPIFY
   AMAZON
   EBAY
@@ -39,9 +40,9 @@ model Listing {
   companyId         Int
   channelId         Int
   channel           Channel   @relation(fields: [channelId], references: [id])
-  stockItemId       Int       // Reference to Product in product-service
-  variantId         Int?      // Reference to Variant in product-service
-  marketplaceId     String?   // External platform ID
+  stockItemId       Int // Reference to Product in product-service
+  variantId         Int? // Reference to Variant in product-service
+  marketplaceId     String? // External platform ID
   marketplaceSku    String?
   listingUrl        String?
   titleOverride     String?

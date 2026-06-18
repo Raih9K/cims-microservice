@@ -55,7 +55,6 @@ export default function AcceptInviteForm() {
       await authService.acceptInvite({
         token,
         password,
-        password_confirmation: confirmPassword,
         name
       });
 

@@ -228,10 +228,14 @@ export default function AttributesTab() {
           setSelectedAttributes([]);
           setSearchQuery("");
         }}
-        title="Select Attributes"
-        className="max-w-4xl"
+        className="p-8 rounded-[2rem] transition-all duration-300 max-w-4xl"
       >
-        <div className="p-6 space-y-6">
+        <div className="mb-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Select Attributes</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Choose custom attributes from your library to apply to this product.</p>
+        </div>
+
+        <div className="space-y-6">
           <div className="relative">
             <Input
               type="text"
@@ -275,7 +279,7 @@ export default function AttributesTab() {
                     <Checkbox
                       id={`attr-${attr.id}`}
                       checked={selectedAttributes.includes(attr.id)}
-                      readOnly
+                      onChange={() => handleSelectAttribute(attr.id)}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm truncate">{attr.name}</p>

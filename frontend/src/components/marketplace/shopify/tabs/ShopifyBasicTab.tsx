@@ -42,7 +42,7 @@ export default function ShopifyBasicTab() {
             <div className="relative">
                 <textarea
                 value={data.description.mainDescription}
-                onChange={(e) => updateDescription("mainDescription", e.target.value)}
+                onChange={(e) => updateDescription({ mainDescription: e.target.value })}
                 rows={6}
                 className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl text-sm font-mono text-gray-600 focus:ring-2 focus:ring-brand-500/10 focus:border-brand-500 transition-all placeholder:text-gray-300 resize-y"
                 placeholder="<h3>Product Title</h3><p>Description...</p>"

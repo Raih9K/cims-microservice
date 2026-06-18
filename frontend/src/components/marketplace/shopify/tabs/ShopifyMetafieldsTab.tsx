@@ -14,7 +14,7 @@ export default function ShopifyMetafieldsTab() {
 
   const handleAddMetafield = () => {
     // Assuming attributes have an 'id' field as per context definition, we generate a temp one.
-    const newAttrs = [...data.attributes, { id: `new-${Date.now()}`, name: "custom.new_field", value: "" }];
+    const newAttrs = [...data.attributes, { id: `new-${Date.now()}`, attribute_id: "", name: "custom.new_field", value: "" }];
     updateAttributes(newAttrs);
   };
 

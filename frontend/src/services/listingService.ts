@@ -1,7 +1,7 @@
 import { MOCK_LISTINGS, simulateApiDelay } from '@/mocks';
 import { api } from "./authService";
 
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
+const USE_MOCK_DATA = false;
 
 export interface Listing {
   listing_id: string;

@@ -118,6 +118,30 @@ export interface Product extends AuditFields {
   published_at?: string;
 }
 
+export interface StockItem {
+  stock_item_id: string;
+  sku: string;
+  title: string;
+  short_description?: string;
+  description?: string;
+  barcode?: string;
+  stock_type: 'parent' | 'basic' | 'variant';
+  item_type: string;
+  condition: ProductCondition;
+  parent_item_id?: string;
+  brand_id?: string;
+  manufacturer_name?: string;
+  manufacturer_country_code?: string;
+  manufacturer_state?: string;
+  manufacturer_postal_code?: string;
+  status: string;
+  belongs_to?: any;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+  is_deleted?: boolean;
+}
+
 export interface StockEntry extends AuditFields {
   product_id: string;
   variant_id?: string;

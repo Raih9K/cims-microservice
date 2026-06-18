@@ -44,9 +44,7 @@ export function useCentralInventory(options: UseInventoryOptions = {}): UseInven
     setError(null);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true'
-        ? '/api/mock'
-        : process.env.NEXT_PUBLIC_API_URL + '/api';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL + '/api';
 
       const token = localStorage.getItem('token');
       const headers = {
@@ -104,9 +102,7 @@ export function useMarketplaceListings(options: UseInventoryOptions = {}): UseIn
     setError(null);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true'
-        ? '/api/mock'
-        : process.env.NEXT_PUBLIC_API_URL + '/api';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL + '/api';
 
       const token = localStorage.getItem('token');
       const headers = {
@@ -171,9 +167,7 @@ export function useCombinedInventory(): {
     setError(null);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true'
-        ? '/api/mock'
-        : process.env.NEXT_PUBLIC_API_URL + '/api';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL + '/api';
 
       const token = localStorage.getItem('token');
       const headers = {

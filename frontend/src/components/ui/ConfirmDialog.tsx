@@ -40,7 +40,7 @@ export function ConfirmDialog({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="" className="max-w-md">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md">
       <div className="p-6">
         <div className="flex items-start gap-4">
           <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${iconColors[type]}`}>

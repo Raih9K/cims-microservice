@@ -185,14 +185,56 @@ exports.Prisma.RefreshTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PackageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  price: 'price',
+  maxSeats: 'maxSeats',
+  features: 'features',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  packageId: 'packageId',
+  status: 'status',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  couponCode: 'couponCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  amount: 'amount',
+  status: 'status',
+  transactionId: 'transactionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.ManagementType = exports.$Enums.ManagementType = {
   SINGLE: 'SINGLE',
@@ -206,7 +248,10 @@ exports.Prisma.ModelName = {
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
-  RefreshToken: 'RefreshToken'
+  RefreshToken: 'RefreshToken',
+  Package: 'Package',
+  Subscription: 'Subscription',
+  Payment: 'Payment'
 };
 
 /**

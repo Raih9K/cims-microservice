@@ -258,10 +258,14 @@ export default function SuppliersTab() {
           setSelectedSuppliers([]);
           setSearchQuery("");
         }}
-        title="Select Suppliers"
-        className="max-w-4xl"
+        className="p-8 rounded-[2rem] transition-all duration-300 max-w-4xl"
       >
-        <div className="p-6 space-y-6">
+        <div className="mb-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Select Suppliers</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Choose suppliers from your library to associate with this product.</p>
+        </div>
+
+        <div className="space-y-6">
           <div className="relative">
             <Input
               type="text"

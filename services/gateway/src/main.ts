@@ -1,14 +1,12 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  // Read service target URLs from env with local fallbacks
-  const useMockDb = process.env.USE_MOCK_DB === 'true';
-  const mockDbUrl = process.env.MOCK_DB_URL || 'http://localhost:4000';
 
   const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://localhost:3001';
   const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost:3002';
@@ -19,15 +17,67 @@ async function bootstrap() {
   const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:3007';
   const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3008';
 
+  // SaaS Gatekeeping Middleware (only runs when token is present)
+  app.use('/api', async (req: any, res: any, next: any) => {
+
+    // Allow public routes
+    const publicPaths = ['/api/auth', '/api/packages', '/api/apply-coupon', '/api/subscribe'];
+    if (publicPaths.some((p) => req.path.startsWith(p))) {
+      return next();
+    }
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      // Let the microservice handle 401 Unauthorized errors
+      return next();
+    }
+
+    try {
+      // Call user-service to fetch the profile containing subscription status
+      const response = await fetch(`${USER_SERVICE_URL}/api/me`, {
+        headers: { Authorization: authHeader },
+      });
+
+      if (!response.ok) {
+        return next();
+      }
+
+      const userProfile = await response.json();
+      const packageName = userProfile?.company?.package?.name || 'Starter';
+
+      // Define endpoint restrictions per package
+      const path = req.path; // e.g. /shopify/stores
+
+      if (packageName === 'Starter') {
+        const forbiddenPrefixes = ['/shopify', '/marketplace', '/listings', '/channels', '/audit-logs', '/orders', '/notifications'];
+        if (forbiddenPrefixes.some((p) => path.startsWith(p))) {
+          return res.status(403).json({
+            success: false,
+            message: `Your Starter subscription plan does not include access to this service. Please upgrade your package.`,
+          });
+        }
+      } else if (packageName === 'Pro') {
+        const forbiddenPrefixes = ['/audit-logs'];
+        if (forbiddenPrefixes.some((p) => path.startsWith(p))) {
+          return res.status(403).json({
+            success: false,
+            message: `Your Pro subscription plan does not include access to audit logs. Please upgrade to Enterprise.`,
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Gateway subscription check error:', err.message);
+      // Fallback: let the request pass through if user-service is temporarily unavailable
+    }
+
+    return next();
+  });
+
   app.use(
     '/api',
     createProxyMiddleware({
-      target: useMockDb ? mockDbUrl : USER_SERVICE_URL,
+      target: USER_SERVICE_URL,
       router: (req) => {
-        if (useMockDb) {
-          return mockDbUrl;
-        }
-
         const url: string = req.url || '';
         const full = url.startsWith('/') ? '/api' + url : '/api/' + url;
 
@@ -94,11 +144,6 @@ async function bootstrap() {
       },
       changeOrigin: true,
       pathRewrite: (path: string) => {
-        if (useMockDb) {
-          // json-server serves database tables directly on root paths (e.g. /products)
-          // Express middleware mounted on '/api' already strips '/api' from path
-          return path;
-        }
         // Microservices expect the '/api' prefix (e.g. /api/products)
         return path.startsWith('/') ? '/api' + path : '/api/' + path;
       },
