@@ -8,8 +8,9 @@ export class StockLevelController {
   @Get()
   findAll(
     @Query('companyId', ParseIntPipe) companyId: number,
-    @Query('productId', ParseIntPipe) productId?: number,
+    @Query('productId') productId?: string,
   ) {
-    return this.inventoryService.getStock(productId || 0, companyId); // Update service if needed
+    const parsedProductId = productId ? parseInt(productId, 10) : undefined;
+    return this.inventoryService.getStock(parsedProductId, companyId);
   }
 }

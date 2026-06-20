@@ -32,7 +32,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   // Sync searchTerm with selected value when options load or value changes
   useEffect(() => {
     if (value) {
-      const selectedOption = options.find((opt) => opt.value === value);
+      const selectedOption = (options || []).find((opt) => opt?.value === value);
       if (selectedOption && searchTerm !== selectedOption.label) {
         setSearchTerm(selectedOption.label);
       }
@@ -41,8 +41,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
     }
   }, [value, options]);
 
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOptions = (options || []).filter((option) =>
+    option?.label?.toLowerCase().includes((searchTerm || "").toLowerCase())
   );
 
   const handleSelect = (option: Option) => {
@@ -56,7 +56,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         // Reset search term to label of current value if not selecting
-        const currentLabel = options.find(opt => opt.value === value)?.label || "";
+        const currentLabel = (options || []).find(opt => opt?.value === value)?.label || "";
         setSearchTerm(currentLabel);
       }
     };

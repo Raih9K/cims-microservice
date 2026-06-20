@@ -4,6 +4,7 @@ import AddProductForm from "@/components/inventory/add-product/AddProductForm";
 import { ProductFormData, ProductFormProvider, useProductForm } from "@/context/ProductFormContext";
 import { ChevronLeftIcon } from "@/icons";
 import { productService } from "@/services/productService";
+import { inventoryService } from "@/services/inventoryService";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,6 +30,10 @@ function EditProductLoader() {
           if (variantId && product.variants) {
             variantData = product.variants.find((v: any) => v.id.toString() === variantId);
           }
+
+          // Fetch stock levels from inventory-service
+          const stockResponse = await inventoryService.getStockLevels({ companyId: 1, productId: Number(id) });
+          const stockLevels = stockResponse.success && Array.isArray(stockResponse.data) ? stockResponse.data : [];
 
           // Map backend product to ProductFormData
           const formData: ProductFormData = {
@@ -79,40 +84,61 @@ function EditProductLoader() {
             variants: {
               themes: product.variants?.themes || [],
               hasVariation: product.variants?.hasVariation ?? (!!variantData || product.type === "Variant" || (product.variants?.variantItems?.length > 0)),
-              variantItems: variantData ? [] : (Array.isArray(product.variants) ? product.variants : (product.variants?.variantItems || [])).map((v: any) => ({
-                id: v.id?.toString() || Math.random().toString(36).substring(7),
-                title: v.title || v.name || "",
-                sku: v.sku || "",
-                combination: v.combination || v.attributes || {},
-                barcode: v.barcode || "",
-                price: v.price?.toString() || v.selling_price?.toString() || "",
-                quantity: v.quantity?.toString() || v.inventory_quantity?.toString() || "0",
-                warehouse: v.warehouse || "Default",
-                stocks: v.stocks || []
-              })),
+              variantItems: variantData ? [] : (Array.isArray(product.variants) ? product.variants : (product.variants?.variantItems || [])).map((v: any) => {
+                const variantStock = stockLevels.find((sl: any) => sl.variantId === v.id);
+                return {
+                  id: v.id?.toString() || Math.random().toString(36).substring(7),
+                  title: v.title || v.name || "",
+                  sku: v.sku || "",
+                  combination: v.combination || v.attributes || {},
+                  barcode: v.barcode || "",
+                  price: v.price?.toString() || v.selling_price?.toString() || "",
+                  quantity: variantStock ? variantStock.quantity.toString() : (v.quantity?.toString() || v.inventory_quantity?.toString() || "0"),
+                  warehouse: variantStock?.warehouse?.name || v.warehouse || "Default",
+                  stocks: v.stocks || []
+                };
+              }),
             },
             inventory: {
               stocks: variantData
-                ? (variantData.stocks || [{
-                  id: "1",
-                  warehouse: "Default",
-                  sku: variantData.sku || "",
-                  available: variantData.quantity || variantData.inventory_quantity || 0,
-                  reserved: 0,
-                  binLocations: [],
-                  priorityOrder: 0,
-                  isDefault: true
-                }])
-                : (product.inventory?.stocks || product.stock_levels?.map((sl: any) => ({
-                  id: sl.id?.toString() || Math.random().toString(),
-                  warehouse: sl.warehouse?.name || sl.warehouse || "Default",
-                  sku: sl.sku || product.sku || "",
-                  available: sl.available_quantity || sl.available || 0,
-                  reserved: sl.reserved_quantity || sl.reserved || 0,
-                  binLocations: sl.bin_locations || sl.binLocations || [product.bin || ""],
-                  priorityOrder: sl.priority_order || sl.priorityOrder || 0,
-                  isDefault: sl.warehouse?.is_default || sl.isDefault || false
-                })) || []),
+                ? (stockLevels.filter((sl: any) => sl.variantId === Number(variantId)).map((sl: any) => ({
+                    id: sl.id?.toString() || Math.random().toString(),
+                    warehouse: sl.warehouse?.name || sl.warehouse || "Default",
+                    sku: variantData.sku || "",
+                    available: sl.quantity || 0,
+                    reserved: sl.reserved || 0,
+                    binLocations: sl.binLocation ? [sl.binLocation] : [],
+                    priorityOrder: 0,
+                    isDefault: sl.warehouse?.is_default || false
+                  })) || [{
+                    id: "1",
+                    warehouse: "Default",
+                    sku: variantData.sku || "",
+                    available: variantData.quantity || variantData.inventory_quantity || 0,
+                    reserved: 0,
+                    binLocations: [],
+                    priorityOrder: 0,
+                    isDefault: true
+                  }])
+                : (stockLevels.length > 0 ? stockLevels.map((sl: any) => ({
+                    id: sl.id?.toString() || Math.random().toString(),
+                    warehouse: sl.warehouse?.name || sl.warehouse || "Default",
+                    sku: sl.sku || product.sku || "",
+                    available: sl.quantity || 0,
+                    reserved: sl.reserved || 0,
+                    binLocations: sl.binLocation ? [sl.binLocation] : [product.bin || ""],
+                    priorityOrder: 0,
+                    isDefault: sl.warehouse?.is_default || false
+                  })) : [{
+                    id: "1",
+                    warehouse: "Default",
+                    sku: product.sku || "",
+                    available: 0,
+                    reserved: 0,
+                    binLocations: [product.bin || ""],
+                    priorityOrder: 0,
+                    isDefault: true
+                  }]),
             },
             pricing: {
               costPrice: product.pricing?.costPrice || (variantData ? (variantData.cost_price?.toString() || "") : (product.cost_price?.toString() || "")),

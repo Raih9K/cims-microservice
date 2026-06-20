@@ -1,7 +1,4 @@
-import { MOCK_TEAM_MEMBERS, simulateApiDelay } from '@/mocks';
-
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000") + "/api";
-const USE_MOCK_DATA = false;
 
 export const teamService = {
   getToken() {
@@ -9,11 +6,6 @@ export const teamService = {
   },
 
   async getTeam(companyId?: number) {
-    if (USE_MOCK_DATA) {
-      await simulateApiDelay(500);
-      return MOCK_TEAM_MEMBERS;
-    }
-
     const url = companyId
       ? `${API_URL}/team?companyId=${companyId}`
       : `${API_URL}/team`;

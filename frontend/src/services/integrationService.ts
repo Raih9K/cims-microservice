@@ -1,7 +1,4 @@
-import { MOCK_CHANNELS, simulateApiDelay } from '@/mocks';
 import { api } from "./authService";
-
-const USE_MOCK_DATA = false; // Forced to false for real DB connection
 
 export interface ChannelSettings {
   matchingProtocol?: string;
@@ -26,11 +23,6 @@ export interface Channel {
 
 export const integrationService = {
   getChannels: async () => {
-    if (USE_MOCK_DATA) {
-      await simulateApiDelay(500);
-      return { success: true, data: MOCK_CHANNELS };
-    }
-
     const response = await api.get('/channels');
     return response.data;
   },

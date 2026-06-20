@@ -19,6 +19,7 @@ import VariantsTab from "./tabs/VariantsTab";
 
 import { useFormEngine } from "@/lib/form-engine/useFormEngine";
 import { productService } from "@/services/productService";
+import { inventoryService } from "@/services/inventoryService";
 
 // ============================================================================
 // CONFIG SECTION (EDITABLE)
@@ -237,23 +238,183 @@ function AddProductFormContent({ id, variantId, mode = "page", onClose, isMarket
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async (status: string = "Draft") => {
+    if (!data.basicInfo.title?.trim()) {
+      alert("Validation Failed: Product Title is required.");
+      return;
+    }
+    if (!data.basicInfo.sku?.trim()) {
+      alert("Validation Failed: Product SKU is required.");
+      return;
+    }
+
+    setIsSaving(false);
     setIsSaving(true);
     try {
-      // Create a shallow copy to update status if needed
-      const payload = {
-        ...data,
-        listingStatus: { ...data.listingStatus, status }
+      // Sanitize payload to match CreateProductDto exactly
+      const sanitizedPayload = {
+        basicInfo: {
+          sku: data.basicInfo.sku,
+          productIdentifierType: data.basicInfo.productIdentifierType || undefined,
+          productIdentifierValue: data.basicInfo.productIdentifierValue || undefined,
+          title: data.basicInfo.title,
+          category: data.basicInfo.category || undefined,
+          condition: data.basicInfo.condition || undefined,
+          brand: data.basicInfo.brand || undefined,
+          manufacturer: data.basicInfo.manufacturer || undefined,
+          msrp: data.basicInfo.msrp ? Number(data.basicInfo.msrp) : undefined,
+          purchasePrice: data.basicInfo.purchasePrice ? Number(data.basicInfo.purchasePrice) : undefined,
+          retailPrice: data.basicInfo.retailPrice ? Number(data.basicInfo.retailPrice) : undefined,
+          map: data.basicInfo.map ? Number(data.basicInfo.map) : undefined,
+          dimensionLength: data.basicInfo.dimensionLength ? Number(data.basicInfo.dimensionLength) : undefined,
+          dimensionWidth: data.basicInfo.dimensionWidth ? Number(data.basicInfo.dimensionWidth) : undefined,
+          dimensionHeight: data.basicInfo.dimensionHeight ? Number(data.basicInfo.dimensionHeight) : undefined,
+          dimensionUnit: data.basicInfo.dimensionUnit || undefined,
+          weightValue: data.basicInfo.weightValue ? Number(data.basicInfo.weightValue) : undefined,
+          weightUnit: data.basicInfo.weightUnit || undefined,
+          manufacturedCountry: data.basicInfo.manufacturedCountry || undefined,
+          manufacturedState: data.basicInfo.manufacturedState || undefined,
+          manufacturedCity: data.basicInfo.manufacturedCity || undefined,
+          manufacturedPostalCode: data.basicInfo.manufacturedPostalCode || undefined,
+        },
+        description: {
+          shortDescription: data.description.shortDescription || undefined,
+          mainDescription: data.description.mainDescription || undefined,
+          features: data.description.features?.filter(f => f.trim() !== "") || [],
+        },
+        variants: {
+          hasVariation: data.variants.hasVariation,
+          variantItems: data.variants.variantItems?.map(item => ({
+            sku: item.sku,
+            title: item.title || undefined,
+            price: item.price ? Number(item.price) : undefined,
+            quantity: item.quantity ? Number(item.quantity) : undefined,
+            attributes: Object.entries(item.combination || {}).map(([name, value]) => ({
+              name,
+              value,
+            })),
+          })) || [],
+        },
+        pricing: {
+          costPrice: data.pricing.costPrice ? Number(data.pricing.costPrice) : undefined,
+          sellingPrice: data.pricing.sellingPrice ? Number(data.pricing.sellingPrice) : undefined,
+          discountType: data.pricing.discountType || undefined,
+          discountValue: data.pricing.discountValue ? Number(data.pricing.discountValue) : undefined,
+          taxClass: data.pricing.taxClass || undefined,
+        },
+        media: {
+          images: data.media.images?.map(img => ({
+            url: img.url,
+            order: img.order || 0,
+          })) || [],
+        },
+        attributes: data.attributes?.map(attr => ({
+          name: attr.name,
+          value: attr.value,
+        })) || [],
+        suppliers: data.suppliers?.map(sup => ({
+          name: sup.name,
+          code: sup.code || undefined,
+          purchasePrice: sup.purchasePrice ? Number(sup.purchasePrice) : undefined,
+        })) || [],
+      };
+
+      // Helper function to resolve warehouse ID from name
+      const resolveWarehouseId = async (warehouseIdentifier: string) => {
+        if (!warehouseIdentifier || warehouseIdentifier === "Default" || warehouseIdentifier === "Default Warehouse") {
+          return undefined;
+        }
+        if (/^\d+$/.test(warehouseIdentifier)) {
+          return parseInt(warehouseIdentifier, 10);
+        }
+        try {
+          const whResponse = await productService.getWarehouses();
+          if (whResponse.success && Array.isArray(whResponse.data)) {
+            const found = whResponse.data.find(
+              (w: any) => w.name.toLowerCase() === warehouseIdentifier.toLowerCase()
+            );
+            return found ? found.id : undefined;
+          }
+        } catch (e) {
+          console.error("Failed to resolve warehouse ID", e);
+        }
+        return undefined;
       };
 
       // USE GENUINE SERVICE CALL
       let result;
       if (variantId && id) {
         // Updating a specific variant
-        result = await productService.updateVariant(id, variantId, payload);
+        result = await productService.updateVariant(id, variantId, sanitizedPayload);
+        if (result.ok) {
+          for (const stockItem of data.inventory.stocks) {
+            if (stockItem.available !== undefined) {
+              const warehouseId = await resolveWarehouseId(stockItem.warehouse);
+              await inventoryService.updateStock({
+                variantId: Number(variantId),
+                companyId: 1,
+                quantity: Number(stockItem.available),
+                type: 'ADJUSTMENT' as any,
+                reason: 'Variant Update Stock',
+                warehouseId
+              });
+            }
+          }
+        }
       } else if (id) {
-        result = await productService.update(id, payload);
+        result = await productService.update(id, sanitizedPayload);
+        if (result.ok) {
+          for (const stockItem of data.inventory.stocks) {
+            if (stockItem.available !== undefined) {
+              const warehouseId = await resolveWarehouseId(stockItem.warehouse);
+              await inventoryService.updateStock({
+                variantId: Number(id),
+                companyId: 1,
+                quantity: Number(stockItem.available),
+                type: 'ADJUSTMENT' as any,
+                reason: 'Product Update Stock',
+                warehouseId
+              });
+            }
+          }
+        }
       } else {
-        result = await productService.create(payload);
+        result = await productService.create(sanitizedPayload);
+        if (result.ok && result.data) {
+          const createdProduct = result.data.data || result.data;
+          const hasVariants = sanitizedPayload.variants.hasVariation;
+
+          if (hasVariants && createdProduct.variants) {
+            for (let i = 0; i < createdProduct.variants.length; i++) {
+              const v = createdProduct.variants[i];
+              const formVariant = data.variants.variantItems[i];
+              if (formVariant && formVariant.quantity) {
+                const warehouseId = await resolveWarehouseId(formVariant.warehouse || "Default");
+                await inventoryService.updateStock({
+                  variantId: Number(v.id),
+                  companyId: 1,
+                  quantity: Number(formVariant.quantity),
+                  type: 'ADJUSTMENT' as any,
+                  reason: 'Initial Variant Stock',
+                  warehouseId
+                });
+              }
+            }
+          } else {
+            for (const stockItem of data.inventory.stocks) {
+              if (stockItem.available !== undefined) {
+                const warehouseId = await resolveWarehouseId(stockItem.warehouse);
+                await inventoryService.updateStock({
+                  variantId: Number(createdProduct.id),
+                  companyId: 1,
+                  quantity: Number(stockItem.available),
+                  type: 'ADJUSTMENT' as any,
+                  reason: 'Initial Product Stock',
+                  warehouseId
+                });
+              }
+            }
+          }
+        }
       }
 
       if (result.ok) {
@@ -268,7 +429,9 @@ function AddProductFormContent({ id, variantId, mode = "page", onClose, isMarket
         }
       } else {
         console.error("Failed to save product. Result object:", result);
-        if (result.status === 422 && result.errors) {
+        if (result.status === 400 && result.message) {
+          alert(`Validation Failed: ${Array.isArray(result.message) ? result.message.join(", ") : result.message}`);
+        } else if (result.status === 422 && result.errors) {
           // Validation error
           const firstError = Object.values(result.errors)[0] as string[];
           alert(`Validation Failed: ${firstError[0]}`);
@@ -278,7 +441,6 @@ function AddProductFormContent({ id, variantId, mode = "page", onClose, isMarket
       }
     } catch (error: any) {
       console.error("Error saving product:", error);
-      // Try to parse validation errors if available
       let errorMessage = "An unexpected error occurred while saving the product";
       if (error.message) errorMessage = error.message;
       alert(errorMessage);

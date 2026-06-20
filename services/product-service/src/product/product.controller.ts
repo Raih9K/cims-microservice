@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -19,6 +20,23 @@ export class ProductController {
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: any,
+  ) {
+    return this.productService.update(id, updateProductDto);
+  }
+
+  @Put(':productId/variants/:variantId')
+  async updateVariant(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Param('variantId', ParseIntPipe) variantId: number,
+    @Body() data: any,
+  ) {
+    return this.productService.updateVariant(productId, variantId, data);
   }
 
   @Get()

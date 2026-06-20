@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Query,
+  Headers,
   ParseIntPipe,
   DefaultValuePipe,
 } from '@nestjs/common';
@@ -17,8 +18,12 @@ export class WarehouseController {
   constructor(private readonly warehouseService: WarehouseService) {}
 
   @Post()
-  create(@Body() data: any) {
-    return this.warehouseService.create(data);
+  create(
+    @Body() data: any,
+    @Headers('x-company-id') companyIdHeader?: string,
+  ) {
+    const companyId = companyIdHeader ? parseInt(companyIdHeader, 10) : 1;
+    return this.warehouseService.create({ ...data, companyId });
   }
 
   @Get()

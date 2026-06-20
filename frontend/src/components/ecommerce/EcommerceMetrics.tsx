@@ -16,7 +16,8 @@ export const EcommerceMetrics = () => {
     const fetchStats = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:8000/api/dashboard/stats", {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+            const response = await fetch(`${apiBaseUrl}/api/dashboard/stats`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Accept": "application/json"

@@ -92,9 +92,13 @@ export class InventoryService {
     });
   }
 
-  async getStock(variantId: number, companyId: number) {
+  async getStock(variantId: number | undefined, companyId: number) {
+    const where: any = { companyId: Number(companyId) };
+    if (variantId !== undefined && variantId !== 0) {
+      where.variantId = Number(variantId);
+    }
     return this.prisma.stockLevel.findMany({
-      where: { variantId, companyId },
+      where,
       include: {
         warehouse: true,
       },

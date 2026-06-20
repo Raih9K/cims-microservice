@@ -2,6 +2,7 @@
 import Button from "@/components/ui/button/Button";
 import { ListIcon, PencilIcon, PlusIcon } from "@/icons";
 import { ApiResponse, productService } from "@/services/productService";
+import { inventoryService } from "@/services/inventoryService";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -163,7 +164,39 @@ export function InventoryPageContent() {
       });
 
       if (response.success && response.data) {
-        setProducts(response.data);
+        // Fetch all stock levels for companyId 1 (default)
+        const stockResponse = await inventoryService.getStockLevels({ companyId: 1 });
+        const stockLevels = stockResponse.success && Array.isArray(stockResponse.data) ? stockResponse.data : [];
+
+        const mappedProducts = response.data.map((p: any) => {
+          // Find stock level for this product (simple) or sum of its variants
+          const productStock = stockLevels.find((sl: any) => sl.variantId === p.id);
+          const totalQty = productStock ? productStock.quantity : 0;
+
+          // Also map variants with their specific stock levels
+          const variantsWithStock = p.variants ? p.variants.map((v: any) => {
+            const variantStock = stockLevels.find((sl: any) => sl.variantId === v.id);
+            return {
+              ...v,
+              quantity: variantStock ? variantStock.quantity : 0,
+              inventory_quantity: variantStock ? variantStock.quantity : 0,
+            };
+          }) : [];
+
+          const finalQty = variantsWithStock.length > 0
+            ? variantsWithStock.reduce((acc: number, v: any) => acc + (v.quantity || 0), 0)
+            : totalQty;
+
+          return {
+            ...p,
+            stock_item_id: (p.stock_item_id || p.id || '').toString(),
+            title: p.title || p.name || '',
+            total_quantity: finalQty,
+            variants: variantsWithStock,
+          };
+        });
+
+        setProducts(mappedProducts);
         if (response.pagination) {
           setPagination(prev => ({
             ...prev,
@@ -220,40 +253,24 @@ export function InventoryPageContent() {
         // Update Variant
         if (p.variants) {
           const updatedVariants = p.variants.map((v: any) =>
-            (v.id === id || v.stock_item_id === id) ? { ...v, inventory_quantity: stockVal } : v
+            (v.id === id || v.stock_item_id === id) ? { ...v, inventory_quantity: stockVal, quantity: stockVal } : v
           );
-          // Recalculate parent total if needed?
-          // For now, let's assume we just update the specific row visual
-          return { ...p, variants: updatedVariants };
+          // Recalculate parent total
+          const newTotal = updatedVariants.reduce((sum: number, v: any) => sum + (v.quantity || 0), 0);
+          return { ...p, total_quantity: newTotal, variants: updatedVariants };
         }
         return p;
       }));
       setEditingStock(null);
 
-      // Persist (Heuristic: Basic Fetch-Merge-Save)
-      // Note: This is a simplified persistence. Ideally backend supports PATCH.
-      // If parentId is provided, it's a variant.
-      if (parentId) {
-        // Variant update
-        // Need to fetch current variant or reconstruct payload.
-        // For safety against wiping data, we skip backend call in this quick demo unless we fetch first.
-        // Given constraints, I will implement a partial payload hoping backend validation allows missing fields (it doesn't currently).
-        // So I will skip backend persistence here to avoid data loss, or I would need to modify backend.
-        // Let's assume the user accepts UI update or I will modify backend later.
-        // ACTUALLY: The user asked for "edit kora jabe", implying functionality.
-        // I'll leave a TODO or implementing a "PATCH" endpoint is better.
-        // For now, console log.
-        console.log("Saving stock for variant", id, stockVal);
-      } else {
-        // Product update
-        const product = products.find(p => p.stock_item_id === id);
-        if (product) {
-          await productService.update(id, {
-            basicInfo: { title: product.title, sku: product.sku }, // Minimal required to pass validation?
-            inventory: { stocks: [{ available: stockVal, warehouse: 'Default' }] }
-          });
-        }
-      }
+      // Persist to inventory-service
+      await inventoryService.updateStock({
+        variantId: Number(id),
+        companyId: 1,
+        quantity: stockVal,
+        type: 'ADJUSTMENT' as any,
+        reason: 'Inline Stock Edit'
+      });
 
     } catch (error) {
       console.error("Failed to update stock", error);
@@ -446,7 +463,7 @@ export function InventoryPageContent() {
                     const isExpanded = expandedRows.has(product.stock_item_id);
 
                     return (
-                      <div key={product.stock_item_id} className="contents">
+                      <div key={product.stock_item_id || `product-${idx}`} className="contents">
                         <div
                           className={`grid gap-4 px-6 py-4 items-center group rounded-2xl bg-white dark:bg-gray-900 border ${isExpanded ? 'border-brand-200 dark:border-brand-500/30' : 'border-transparent'} hover:border-brand-100 dark:hover:border-brand-500/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all cursor-pointer relative z-10`}
                           style={{ gridTemplateColumns: gridTemplate, animationDelay: `${idx * 20}ms` }}

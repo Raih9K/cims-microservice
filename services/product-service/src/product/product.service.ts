@@ -262,6 +262,30 @@ export class ProductService {
     });
   }
 
+  async updateVariant(productId: number, variantId: number, data: any) {
+    const variant = await this.prisma.variant.findFirst({
+      where: { id: Number(variantId), productId: Number(productId) },
+    });
+    if (!variant) {
+      throw new NotFoundException(`Variant #${variantId} for Product #${productId} not found`);
+    }
+
+    const sku = data.basicInfo?.sku;
+    const name = data.basicInfo?.title;
+    const price = data.pricing?.sellingPrice ? Number(data.pricing.sellingPrice) : undefined;
+    const costPrice = data.pricing?.costPrice ? Number(data.pricing.costPrice) : undefined;
+
+    return this.prisma.variant.update({
+      where: { id: Number(variantId) },
+      data: {
+        sku: sku || undefined,
+        name: name || undefined,
+        sellingPrice: price !== undefined ? price : undefined,
+        costPrice: costPrice !== undefined ? costPrice : undefined,
+      },
+    });
+  }
+
   async delete(id: number, companyId: number) {
     const product = await this.findOne(id, companyId);
     return this.prisma.product.delete({ where: { id: product.id } });

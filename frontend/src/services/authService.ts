@@ -1,7 +1,5 @@
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000") + "/api";
-const USE_MOCK_DATA = false;
-
 const getHeaders = () => {
   const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
   return {
@@ -9,32 +7,6 @@ const getHeaders = () => {
     "Accept": "application/json",
     ...(token ? { "Authorization": `Bearer ${token}` } : {}),
   } as HeadersInit;
-};
-
-const simulateApiDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-const MOCK_USER: User = {
-    id: 1,
-    name: "Raihan Khan",
-    email: "admin@demo.com",
-    company_id: 1,
-    status: 'active',
-    roles: ['admin'],
-    permissions: [],
-    company: {
-        id: 1,
-        name: "Demo Tech Solutions",
-        business_type: "Technology",
-        management_type: "team",
-        subscription_status: "trial",
-        package_id: 1
-    }
-};
-
-const MOCK_AUTH_RESPONSE: AuthResponse = {
-    user: MOCK_USER,
-    access_token: "mock_token_12345",
-    token_type: "Bearer"
 };
 
 export const api = {
@@ -149,12 +121,6 @@ export const authService = {
   },
 
   async login(data: any): Promise<AuthResponse> {
-    if (USE_MOCK_DATA) {
-      await simulateApiDelay(800);
-      // Auto-login with mock user for any email/password
-      return MOCK_AUTH_RESPONSE;
-    }
-
     console.log("Attempting login to:", `${API_URL}/auth/login`);
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
@@ -169,11 +135,6 @@ export const authService = {
   },
 
   async me(token: string): Promise<User> {
-    if (USE_MOCK_DATA) {
-      await simulateApiDelay(300);
-      return MOCK_USER;
-    }
-
     try {
         const res = await fetch(`${API_URL}/me`, {
           headers: {

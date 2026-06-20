@@ -1,7 +1,4 @@
-import { MOCK_LISTINGS, simulateApiDelay } from '@/mocks';
 import { api } from "./authService";
-
-const USE_MOCK_DATA = false;
 
 export interface Listing {
   listing_id: string;
@@ -33,49 +30,6 @@ export interface Listing {
 
 export const listingService = {
   getListings: async (params?: any) => {
-    if (USE_MOCK_DATA) {
-      await simulateApiDelay(500);
-      let filtered = [...MOCK_LISTINGS] as any[];
-
-      // Filter by Channel
-      if (params?.channel && params.channel !== 'all') {
-        filtered = filtered.filter(l => l.channel === params.channel);
-      }
-
-      // Filter by Status
-      if (params?.status && params.status !== 'All') {
-        filtered = filtered.filter(l => l.status?.toLowerCase() === params.status?.toLowerCase());
-      }
-
-      // Filter by Search
-      if (params?.q) {
-        const query = params.q.toLowerCase();
-        filtered = filtered.filter(l =>
-          l.product?.sku?.toLowerCase().includes(query) ||
-          l.product?.name?.toLowerCase().includes(query) ||
-          l.channel?.name?.toLowerCase().includes(query) ||
-          l.listing_id?.toLowerCase().includes(query)
-        );
-      }
-
-      return {
-        success: true,
-        data: filtered,
-        stats: {
-          active: MOCK_LISTINGS.filter(l => l.status === 'active').length,
-          warning: MOCK_LISTINGS.filter(l => l.status === 'warning').length,
-          error: MOCK_LISTINGS.filter(l => l.status === 'error').length,
-          delisted: MOCK_LISTINGS.filter(l => l.status === 'delisted').length,
-          inactive: MOCK_LISTINGS.filter(l => l.status === 'inactive').length,
-        },
-        meta: {
-          total: filtered.length,
-          current_page: 1,
-          total_pages: 1
-        }
-      };
-    }
-
     const query = new URLSearchParams(params).toString();
     const response = await api.get(`/listings?${query}`);
     return response.data;

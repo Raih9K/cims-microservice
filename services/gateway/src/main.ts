@@ -79,9 +79,7 @@ async function bootstrap() {
     return next();
   });
 
-  app.use(
-    '/api',
-    createProxyMiddleware({
+  const apiProxy = createProxyMiddleware({
       target: USER_SERVICE_URL,
       router: (req) => {
         const url: string = req.url || '';
@@ -158,8 +156,14 @@ async function bootstrap() {
         }
         return rewritten.startsWith('/') ? '/api' + rewritten : '/api/' + rewritten;
       },
-    }),
-  );
+    });
+
+  app.use('/api', (req: any, res: any, next: any) => {
+    if (req.originalUrl === '/api/dashboard/stats' || req.path === '/dashboard/stats') {
+      return next();
+    }
+    return apiProxy(req, res, next);
+  });
 
   app.enableCors();
   await app.listen(3000);

@@ -1,16 +1,16 @@
 {
   "info": {
-    "_postman_id": "cims-full-system-api",
-    "name": "CIMS Full System API",
-    "description": "Complete collection of API endpoints for CIMS (Auth, Team, Products, Inventory, Setup, Shopify).",
+    "_postman_id": "cims-full-system-api-v2",
+    "name": "CIMS Full Microservices System API",
+    "description": "Complete collection of API endpoints for all CIMS microservices (Gateway, Auth, Products, Warehouses, Inventory, Shopify, Marketplace/Channels, Orders, Notifications, Auditing).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "1. Authentication",
+      "name": "1. Authentication & Profile",
       "item": [
         {
-          "name": "Signup (Register Company)",
+          "name": "Signup (Register Company & Admin)",
           "request": {
             "method": "POST",
             "header": [],
@@ -24,37 +24,15 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/api/signup",
+              "raw": "{{base_url}}/api/auth/signup",
               "host": ["{{base_url}}"],
-              "path": ["api", "signup"]
+              "path": ["api", "auth", "signup"]
             }
           },
           "response": []
         },
         {
-          "name": "Verify OTP (Dev: 123456)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"admin@demo.com\",\n    \"otp\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/verify-otp",
-              "host": ["{{base_url}}"],
-              "path": ["api", "verify-otp"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Login (Sets Token)",
+          "name": "Login",
           "event": [
             {
               "listen": "test",
@@ -64,7 +42,7 @@
                   "if (jsonData.access_token) {",
                   "    pm.collectionVariables.set(\"token\", jsonData.access_token);",
                   "    pm.environment.set(\"token\", jsonData.access_token);",
-                  "    console.log(\"Token updated\");",
+                  "    console.log(\"Token updated successfully\");",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -84,15 +62,37 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/api/login",
+              "raw": "{{base_url}}/api/auth/login",
               "host": ["{{base_url}}"],
-              "path": ["api", "login"]
+              "path": ["api", "auth", "login"]
             }
           },
           "response": []
         },
         {
-          "name": "Get Current User (Me)",
+          "name": "Accept Invitation",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"colleague@demo.com\",\n    \"password\": \"securepassword\",\n    \"token\": \"replace-with-invitation-token-uuid\",\n    \"name\": \"Colleague Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/accept-invite",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "accept-invite"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User Profile (Me)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -113,9 +113,37 @@
             }
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Subscriptions",
+      "item": [
+        {
+          "name": "Get Subscription Packages",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/packages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "packages"]
+            }
+          },
+          "response": []
         },
         {
-          "name": "Logout",
+          "name": "Apply Coupon",
           "request": {
             "auth": {
               "type": "bearer",
@@ -129,10 +157,51 @@
             },
             "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"code\": \"PROMO50\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{base_url}}/api/logout",
+              "raw": "{{base_url}}/api/apply-coupon",
               "host": ["{{base_url}}"],
-              "path": ["api", "logout"]
+              "path": ["api", "apply-coupon"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Subscribe to Package",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"packageId\": 2,\n    \"paymentMethod\": \"stripe\",\n    \"couponCode\": \"PROMO50\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subscribe",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subscribe"]
             }
           },
           "response": []
@@ -140,7 +209,197 @@
       ]
     },
     {
-      "name": "2. Products & Inventory",
+      "name": "3. Team Management",
+      "item": [
+        {
+          "name": "Invite Team Member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"colleague@demo.com\",\n    \"role\": \"Team Member\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/team/invite",
+              "host": ["{{base_url}}"],
+              "path": ["api", "team", "invite"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Team Members",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/team/members?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "team", "members"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Team Member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/team/members/:userId?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "team", "members", ":userId"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Company Settings",
+      "item": [
+        {
+          "name": "Get Company Info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/company",
+              "host": ["{{base_url}}"],
+              "path": ["api", "company"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Company Info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Corp Name\",\n    \"businessType\": \"Wholesale\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/company",
+              "host": ["{{base_url}}"],
+              "path": ["api", "company"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Company by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/company/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "company", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Product Management",
       "item": [
         {
           "name": "Get All Products",
@@ -158,17 +417,48 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/products?page=1&limit=10",
+              "raw": "{{base_url}}/api/products?companyId=1",
               "host": ["{{base_url}}"],
               "path": ["api", "products"],
               "query": [
                 {
-                  "key": "page",
+                  "key": "companyId",
                   "value": "1"
-                },
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
                 {
-                  "key": "limit",
-                  "value": "10"
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/:id?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
                 }
               ]
             }
@@ -278,6 +568,48 @@
           "response": []
         },
         {
+          "name": "Update Product Variant",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"price\": 25.00,\n    \"quantity\": 12\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/products/:productId/variants/:variantId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", ":productId", "variants", ":variantId"],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "1"
+                },
+                {
+                  "key": "variantId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Delete Product",
           "request": {
             "auth": {
@@ -293,9 +625,15 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/products/:id",
+              "raw": "{{base_url}}/api/products/:id?companyId=1",
               "host": ["{{base_url}}"],
               "path": ["api", "products", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -309,99 +647,7 @@
       ]
     },
     {
-      "name": "3. Team Management",
-      "item": [
-        {
-          "name": "Get Team Members",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/team",
-              "host": ["{{base_url}}"],
-              "path": ["api", "team"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Invite Member",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"colleague@demo.com\",\n    \"role\": \"Team Member\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/team/invite",
-              "host": ["{{base_url}}"],
-              "path": ["api", "team", "invite"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Switch Company",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"company_id\": 2\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/team/switch-company",
-              "host": ["{{base_url}}"],
-              "path": ["api", "team", "switch-company"]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "4. Setup Resources",
+      "name": "6. Setup Resources",
       "item": [
         {
           "name": "Get Brands",
@@ -419,9 +665,15 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/brands",
+              "raw": "{{base_url}}/api/brands?companyId=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "brands"]
+              "path": ["api", "brands"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
             }
           },
           "response": []
@@ -474,9 +726,15 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/categories",
+              "raw": "{{base_url}}/api/categories?companyId=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "categories"]
+              "path": ["api", "categories"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
             }
           },
           "response": []
@@ -514,7 +772,7 @@
           "response": []
         },
         {
-          "name": "Get Warehouses",
+          "name": "Get Suppliers",
           "request": {
             "auth": {
               "type": "bearer",
@@ -529,20 +787,21 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/warehouses",
+              "raw": "{{base_url}}/api/suppliers?companyId=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "warehouses"]
+              "path": ["api", "suppliers"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
             }
           },
           "response": []
-        }
-      ]
-    },
-    {
-      "name": "5. Shopify Integration (Manual)",
-      "item": [
+        },
         {
-          "name": "Connect Store",
+          "name": "Create Supplier",
           "request": {
             "auth": {
               "type": "bearer",
@@ -558,7 +817,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"shop_domain\": \"my-cool-store.myshopify.com\",\n    \"access_token\": \"shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n    \"api_version\": \"2024-01\"\n}",
+              "raw": "{\n    \"name\": \"Super Global Supplier\",\n    \"companyId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -566,15 +825,15 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/api/shopify/connect",
+              "raw": "{{base_url}}/api/suppliers",
               "host": ["{{base_url}}"],
-              "path": ["api", "shopify", "connect"]
+              "path": ["api", "suppliers"]
             }
           },
           "response": []
         },
         {
-          "name": "List Channels",
+          "name": "Get Attributes",
           "request": {
             "auth": {
               "type": "bearer",
@@ -589,15 +848,357 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/shopify/channels",
+              "raw": "{{base_url}}/api/attributes?companyId=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "shopify", "channels"]
+              "path": ["api", "attributes"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "Trigger Manual Sync",
+          "name": "Create Attribute",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Color\",\n    \"companyId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attributes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "attributes"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Warehouses & Stock Levels",
+      "item": [
+        {
+          "name": "Get Warehouses",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/warehouses?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "warehouses"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Warehouse",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-company-id",
+                "value": "1"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Chicago Warehouse\",\n    \"address\": \"500 N Michigan Ave\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/warehouses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "warehouses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Warehouse Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/warehouses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "warehouses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Warehouse",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Chicago Hub\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/warehouses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "warehouses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Warehouse",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/warehouses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "warehouses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stock Levels",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stock-levels?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stock-levels"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Variant Stock",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventory/stock?variantId=1&companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "stock"],
+              "query": [
+                {
+                  "key": "variantId",
+                  "value": "1"
+                },
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Stock",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"variantId\": 1,\n    \"warehouseId\": 1,\n    \"available\": 200,\n    \"safetyStock\": 10,\n    \"binLocation\": \"A1-05\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventory/update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "update"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Shopify Integration",
+      "item": [
+        {
+          "name": "Connect Shopify Store Manually",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"shop_domain\": \"my-cool-store.myshopify.com\",\n    \"access_token\": \"shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shopify/connect?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shopify", "connect"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trigger Manual Channel Sync",
           "request": {
             "auth": {
               "type": "bearer",
@@ -612,13 +1213,62 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/shopify/channels/:id/sync",
+              "raw": "{{base_url}}/api/shopify/channels/:id/sync?companyId=1",
               "host": ["{{base_url}}"],
               "path": ["api", "shopify", "channels", ":id", "sync"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "ch_xxxxxxxx"
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Marketplace Channels & Listings",
+      "item": [
+        {
+          "name": "Create Channel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Shopify US Store\",\n    \"marketplace\": \"shopify\",\n    \"store_url\": \"my-shop.myshopify.com\",\n    \"marketplace_data\": {\n        \"access_token\": \"shpat_xxxxxxxxxxxxx\"\n    },\n    \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/channels?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "channels"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
                 }
               ]
             }
@@ -626,7 +1276,7 @@
           "response": []
         },
         {
-          "name": "Get Inventory Levels",
+          "name": "Get Channels",
           "request": {
             "auth": {
               "type": "bearer",
@@ -641,9 +1291,557 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/shopify/inventory-levels",
+              "raw": "{{base_url}}/api/channels?companyId=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "shopify", "inventory-levels"]
+              "path": ["api", "channels"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Channel Stats",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/channels/stats?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "channels", "stats"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Channel Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/channels/:id?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "channels", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Channel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Shopify UK Store\",\n    \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/channels/:id?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "channels", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Channel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/channels/:id?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "channels", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Listing",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productId\": 1,\n    \"channelId\": 1,\n    \"externalProductId\": \"ext_prod_12345\",\n    \"status\": \"synced\",\n    \"price\": 99.99\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/listings?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "listings"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Listings",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/listings?companyId=1&channelId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "listings"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                },
+                {
+                  "key": "channelId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Listing",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"price\": 109.99,\n    \"status\": \"synced\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/listings/:id?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "listings", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10. Order Management",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"companyId\": 1,\n    \"channelId\": 1,\n    \"externalOrderId\": \"ord_12345\",\n    \"customerName\": \"John Doe\",\n    \"customerEmail\": \"john@demo.com\",\n    \"shippingAddress\": \"123 Main St, New York, NY\",\n    \"totalAmount\": 199.98,\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"variantId\": 1,\n            \"sku\": \"MOUSE-MX-001\",\n            \"quantity\": 2,\n            \"price\": 99.99\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Orders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/orders?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"fulfilled\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/status?companyId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", "status"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11. Notifications",
+      "item": [
+        {
+          "name": "Send Notification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"type\": \"low_stock\",\n    \"companyId\": 1,\n    \"userId\": 1,\n    \"message\": \"Stock level for MOUSE-MX-001 is below safety limit.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/send",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "send"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12. Audit Logs",
+      "item": [
+        {
+          "name": "Create Audit Log",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"companyId\": 1,\n    \"userId\": 1,\n    \"action\": \"product.update\",\n    \"entityType\": \"product\",\n    \"entityId\": \"1\",\n    \"details\": {\n        \"field\": \"price\",\n        \"oldValue\": 99.99,\n        \"newValue\": 109.99\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/audit-logs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "audit-logs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/audit-logs?companyId=1&entityType=product&entityId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "audit-logs"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1"
+                },
+                {
+                  "key": "entityType",
+                  "value": "product"
+                },
+                {
+                  "key": "entityId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "13. Dashboard Stats",
+      "item": [
+        {
+          "name": "Get Dashboard Stats Summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard", "stats"]
             }
           },
           "response": []
@@ -654,7 +1852,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://127.0.0.1:8000",
+      "value": "http://127.0.0.1:3000",
       "type": "string"
     },
     {
