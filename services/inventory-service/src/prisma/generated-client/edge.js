@@ -157,7 +157,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\workstation\\dev\\server\\www\\cims -microservicea\\services\\inventory-service\\src\\prisma\\generated-client",
+      "value": "D:\\Server\\htdocs\\cims-microservice\\services\\inventory-service\\src\\prisma\\generated-client",
       "fromEnvVar": null
     },
     "config": {
@@ -171,12 +171,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\workstation\\dev\\server\\www\\cims -microservicea\\services\\inventory-service\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\Server\\htdocs\\cims-microservice\\services\\inventory-service\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.22.0",
@@ -185,6 +184,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
